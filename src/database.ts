@@ -183,4 +183,11 @@ export class PlantDatabase {
 
 		return this.getPlant(id);
 	}
+
+	deletePlant(id: string): boolean {
+		const stmt = this.db.prepare("DELETE FROM plants WHERE id = ?");
+		const r = stmt.run(id);
+
+		return r.changes > 0;
+	}
 }
