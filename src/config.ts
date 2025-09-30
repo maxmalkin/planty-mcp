@@ -1,6 +1,4 @@
-import dotenv from "dotenv";
-
-dotenv.config();
+import "dotenv/config";
 
 export interface DatabaseConfig {
 	host: string;
@@ -11,8 +9,8 @@ export interface DatabaseConfig {
 }
 
 export const dbConfig: DatabaseConfig = {
-	host: process.env.DB_HOST || "localhost",
-	port: parseInt(process.env.DB_PORT || "5432"),
+	host: process.env.DB_HOST || "127.0.0.1",
+	port: Number.parseInt(process.env.DB_PORT || "5432", 10),
 	user: process.env.DB_USER || "username",
 	password: process.env.DB_PASSWORD || "password",
 	database: process.env.DB_NAME || "planty",

@@ -420,36 +420,3 @@ export class PlantDatabase {
 		await this.pool.end();
 	}
 }
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-	(async () => {
-		const db = new PlantDatabase();
-
-		if (!(await db.initialize())) {
-			console.error("Failed to initialize database");
-			process.exit(1);
-		}
-
-		const p = await db.addPlant({
-			name: "Fiddle Leaf Fig",
-			species: "Ficus lyrata",
-			location: "Living Room",
-			acquiredDate: "2023-01-15",
-			wateringFrequency: 7,
-			lastWatered: null,
-			notes: "Needs bright, indirect light.",
-		});
-
-		console.log("added plant: ", p);
-
-		const r = await db.getPlant(p.id);
-
-		console.log("got plant: ", r);
-
-		const all = await db.listPlants();
-		console.log("all plants: ", all);
-
-		await db.close();
-		process.exit(0);
-	})();
-}
