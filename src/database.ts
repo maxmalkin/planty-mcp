@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import _ from 'lodash';
 import { throws } from 'assert';
 
+
 const { Pool } = pg;
 
 export interface User {
