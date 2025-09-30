@@ -9,5 +9,5 @@ An MCP server for plant care.
 ## Stack
 
 - Typescript
-- SQLite
+- Postgres
 - Biome
