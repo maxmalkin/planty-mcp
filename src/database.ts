@@ -263,4 +263,15 @@ export class PlantDatabase {
 
 		return { id, ...log, notes: log.notes || null, createdAt: now };
 	}
+
+	getGrowthLogs(plantId: string): GrowthLog[] {
+		const stmt = this.db.prepare(`
+			SELECT * FROM growth_logs
+			WHERE plantId = ?
+			ORDER BY logDate DESC
+		`);
+
+		const rows = stmt.all(plantId);
+		return rows as GrowthLog[];
+	}
 }
