@@ -50,4 +50,17 @@ app.get("/sse", async (req: AuthenticatedRequest, res) => {
 	app.post("/message", async (req, res) => {
 		res.status(200).end();
 	});
+
+	async function main() {
+		await db.initialize();
+
+		app.listen(PORT, () => {
+			console.log(`Server is running on http://localhost:${PORT}`);
+		});
+	}
+
+	main().catch((error) => {
+		console.error("Failed to start server:", error);
+		process.exit(1);
+	});
 });
