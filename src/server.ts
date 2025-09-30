@@ -408,22 +408,48 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				};
 			}
 
-			// case "update_plant": {
-			// 	const plantId = args?.plantId as string;
-			// 	if (!plantId) {
-			// 		return {
-			// 			content: [
-			// 				{
-			// 					type: "text",
-			// 					text: `Args are undefined.`,
-			// 				},
-			// 			],
-			// 			isError: true,
-			// 		};
-			// 	}
-			// 	const updatedPlant = await db.updatePlant(plantId, args);
-			// 	return;
-			// }
+			case "update_plant": {
+				const updates: {
+					name?: string;
+					species?: string;
+					location?: string;
+					acquiredDate?: string;
+					wateringFrequency?: number;
+					notes?: string;
+				} = {};
+
+				if (typeof args?.name === "string") updates.name = args.name;
+				if (typeof args?.species === "string") updates.species = args.species;
+				if (typeof args?.location === "string")
+					updates.location = args.location;
+				if (typeof args?.acquiredDate === "string")
+					updates.acquiredDate = args.acquiredDate;
+				if (typeof args?.wateringFrequency === "number")
+					updates.wateringFrequency = args.wateringFrequency;
+				if (typeof args?.notes === "string") updates.notes = args.notes;
+
+				const plant = await db.updatePlant(args?.plantId as string, updates);
+
+				if (!plant) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `Plant with ID ${args?.plantId} not found.`,
+							},
+						],
+					};
+				}
+
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Successfully updated plant "${plant.name}" with ID ${plant.id}.`,
+						},
+					],
+				};
+			}
 
 			default: {
 				return {
