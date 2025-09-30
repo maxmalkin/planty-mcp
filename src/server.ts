@@ -207,6 +207,22 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					required: ["plantId"],
 				},
 			},
+			{
+				name: "add_plant_image",
+				description: "Add an image for a specific plant.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+						filename: { type: "string", description: "Image filename." },
+						caption: { type: "string", description: "Optional caption." },
+						takenAt: {
+							type: "string",
+							description: "Date taken (ISO format).",
+						},
+					},
+				},
+			},
 		],
 	};
 });
