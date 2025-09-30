@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
 import path from "path";
 import { fileURLToPath } from "url";
+import _ from "lodash";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -121,7 +122,43 @@ export class PlantDatabase {
 		const stmt = this.db.prepare(`SELECT * FROM plants WHERE id = ?`);
 		const row = stmt.get(id);
 
-		//technically any but we know it fits Plant shape
 		return stmt.get(id) as Plant | undefined;
+	}
+
+	listPlants(filters?: { location?: string; species?: string }): Plant[] {
+		let query = "SELECT * FROM plants";
+		const params: string[] = [];
+
+		// build filtered query
+		if (filters) {
+			const conditions: string[] = [];
+			if (filters.location) {
+				conditions.push("location = ?");
+				params.push(filters.location);
+			}
+
+			if (filters.species) {
+				conditions.push("species = ?");
+				params.push(filters.species);
+			}
+
+			if (conditions.length > 0) {
+				query += " WHERE " + conditions.join(" AND ");
+			}
+		}
+
+		query += " ORDER BY name";
+
+		const stmt = this.db.prepare(query);
+		const rows = stmt.all(...params);
+
+		return rows as Plant[];
+	}
+
+	updatePlant(
+		id: string,
+		updates: Partial<Omit<Plant, "id" | "createdAt" | "updatedAt">>
+	): Plant | undefined {
+		if (!this.getPlant(id)) return undefined;
 	}
 }
