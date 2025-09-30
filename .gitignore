@@ -173,3 +173,36 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+build/auth.d.ts
+build/auth.d.ts.map
+build/auth.js
+build/auth.js.map
+build/config.d.ts
+build/config.d.ts.map
+build/config.js
+build/config.js.map
+build/database.d.ts
+build/database.d.ts.map
+build/database.js
+build/database.js.map
+build/handlers.d.ts
+build/handlers.d.ts.map
+build/handlers.js
+build/handlers.js.map
+build/http.d.ts
+build/http.d.ts.map
+build/http.js
+build/http.js.map
+build/routes.d.ts
+build/routes.d.ts.map
+build/routes.js
+build/routes.js.map
+build/server.d.ts
+build/server.d.ts.map
+build/server.js
+build/server.js.map
+build/types.d.ts
+build/types.d.ts.map
+build/types.js
+build/types.js.map
+build/public/index.html
