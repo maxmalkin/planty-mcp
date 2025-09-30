@@ -238,4 +238,29 @@ export class PlantDatabase {
 		const rows = stmt.all(plantId);
 		return rows as WateringHistory[];
 	}
+
+	addGrowthLog(log: Omit<GrowthLog, "id" | "createdAt">): GrowthLog {
+		const id = uuidv4();
+		const now = new Date().toISOString();
+
+		const stmt = this.db.prepare(`
+			INSERT INTO growth_logs (
+				id, plantId, logDate, measureType, measureUnit, value, notes, createdAt
+			)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		`);
+
+		stmt.run(
+			id,
+			log.plantId,
+			log.logDate,
+			log.measureType,
+			log.measureUnit,
+			log.value,
+			log.notes || null,
+			now
+		);
+
+		return { id, ...log, notes: log.notes || null, createdAt: now };
+	}
 }
