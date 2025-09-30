@@ -27,5 +27,19 @@ export function createMiddleware(db: PlantDatabase) {
 		if (!key.startsWith("planty")) {
 			return res.status(401).json({ error: "Unauthorized" });
 		}
+
+		try {
+			const user = await db.getUserByApiKey(key);
+			if (!user) {
+				return res.status(401).json({ error: "Unauthorized" });
+			}
+
+			req.userId = user.id;
+			req.userEmail = user.email;
+			next();
+		} catch (error) {
+			console.error("Authentication error:", error);
+			return res.status(500).json({ error: "Internal Server Error" });
+		}
 	};
 }
