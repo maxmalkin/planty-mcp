@@ -1,8 +1,8 @@
-import Database from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
-import type { Plant, WateringHistory, GrowthLog, PlantImage } from './types';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Database from "better-sqlite3";
+import { v4 as uuidv4 } from "uuid";
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,10 +10,16 @@ const __dirname = path.dirname(__filename);
 export class PlantDatabase {
 	private db: Database.Database;
 
-	constructor(dbPath: string = path.join(__dirname, '../database/plants.db')) {
+	constructor(dbPath: string = path.join(__dirname, "../database/plants.db")) {
 		this.db = new Database(dbPath);
-		this.db.pragma('foreign_keys = ON');
-		this.initializeDatabase();
+		this.db.pragma("foreign_keys = ON");
+
+		try {
+			this.initializeDatabase();
+			console.log("Database initialized.");
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	private initializeDatabase(): void {
@@ -64,5 +70,11 @@ export class PlantDatabase {
 			createdAt TEXT NOT NULL,
 			FOREIGN KEY (plantId) REFERENCES plants(id) ON DELETE CASCADE
 		)`;
+
+		const createIndexes = `
+			CREATE INDEX IF NOT EXISTS idx_watering_history_plantId ON watering_history(plantId);
+			CREATE INDEX IF NOT EXISTS idx_growth_logs_plantId ON growth_logs(plantId);
+			CREATE INDEX IF NOT EXISTS idx_plant_images_plantId ON plant_images(plantId);
+		`;
 	}
 }
