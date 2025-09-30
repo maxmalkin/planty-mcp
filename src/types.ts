@@ -1,5 +1,8 @@
 /**
- * @description Default shape for plant data.
+ * @description Default data shapes.
+ */
+
+/**
  * acquiredDate and lastWatered are ISO format.
  * wateringFrequency is in days.
  */
@@ -14,4 +17,15 @@ export interface Plant {
 	careNotes: string;
 	createdAt: string;
 	updatedAt: string;
+}
+
+/**
+ * wateredDate and createdAt are ISO format.
+ */
+export interface WateringHistory {
+	id: string;
+	plantId: string;
+	wateredDate: string;
+	notes: string | null;
+	createdAt: string;
 }
