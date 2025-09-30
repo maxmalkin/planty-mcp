@@ -22,7 +22,7 @@ export class PlantDatabase {
 		}
 	}
 
-	private initializeDatabase(): void {
+	private initializeDatabase(): boolean {
 		const createPlantsTable = `
 			CREATE TABLE IF NOT EXISTS plants (
 			id TEXT PRIMARY KEY,
@@ -76,5 +76,17 @@ export class PlantDatabase {
 			CREATE INDEX IF NOT EXISTS idx_growth_logs_plantId ON growth_logs(plantId);
 			CREATE INDEX IF NOT EXISTS idx_plant_images_plantId ON plant_images(plantId);
 		`;
+
+		try {
+			this.db.exec(createPlantsTable);
+			this.db.exec(createWateringHistoryTable);
+			this.db.exec(createGrowthLogsTable);
+			this.db.exec(createPlantImagesTable);
+			this.db.exec(createIndexes);
+
+			return true;
+		} catch (error) {
+			return false;
+		}
 	}
 }
