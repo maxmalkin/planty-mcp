@@ -566,7 +566,7 @@ export class PlantDatabase {
 		if (result.rows.length === 0) return undefined;
 
 		await this.pool.query(
-			`UPDATE api_keys SET last_used_at = $1 WHERE key_hash = $2`,
+			`UPDATE api_keys SET last_used = $1 WHERE key_hash = $2`,
 			[new Date().toISOString(), keyHash]
 		);
 
@@ -600,7 +600,7 @@ export class PlantDatabase {
 		}>
 	> {
 		const result = await this.pool.query(
-			`SELECT id, key_prefix, created_at, last_used_at
+			`SELECT id, key_prefix, created_at, last_used
 			FROM api_keys
 			WHERE user_id = $1 AND is_active = true
 			ORDER BY created_at DESC`,
@@ -611,7 +611,7 @@ export class PlantDatabase {
 			id: row.id,
 			keyPrefix: row.key_prefix,
 			createdAt: this.toISOString(row.created_at) as string,
-			lastUsedAt: this.toISOString(row.last_used_at),
+			lastUsedAt: this.toISOString(row.last_used),
 		}));
 	}
 
