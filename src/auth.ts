@@ -1,5 +1,5 @@
-import type { PlantDatabase } from "./database.js";
-import type { Request, Response, NextFunction } from "express";
+import type { PlantDatabase } from './database.js';
+import type { Request, Response, NextFunction } from 'express';
 
 export interface AuthenticatedRequest extends Request {
 	userId?: string;
@@ -10,13 +10,13 @@ export function createAuthMiddleware(db: PlantDatabase) {
 	return async (
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction
+		next: NextFunction,
 	) => {
 		if (
-			req.path === "/api/generate-key" ||
-			req.path === "/health" ||
-			req.path === "/" ||
-			req.path.startsWith("/static/") ||
+			req.path === '/api/generate-key' ||
+			req.path === '/health' ||
+			req.path === '/' ||
+			req.path.startsWith('/static/') ||
 			req.path.match(/\.(html|css|js|png|jpg|svg|ico)$/)
 		) {
 			return next();
@@ -24,19 +24,19 @@ export function createAuthMiddleware(db: PlantDatabase) {
 
 		const authHeader = req.headers.authorization;
 
-		if (!authHeader || !authHeader.startsWith("Bearer ")) {
+		if (!authHeader || !authHeader.startsWith('Bearer ')) {
 			return res.status(401).json({
-				error: "Unauthorized",
-				message: "API key required",
+				error: 'Unauthorized',
+				message: 'API key required',
 			});
 		}
 
 		const apiKey = authHeader.substring(7);
 
-		if (!apiKey.startsWith("planty_live_")) {
+		if (!apiKey.startsWith('planty_live_')) {
 			return res.status(401).json({
-				error: "Unauthorized",
-				message: "Invalid API key format",
+				error: 'Unauthorized',
+				message: 'Invalid API key format',
 			});
 		}
 
@@ -45,8 +45,8 @@ export function createAuthMiddleware(db: PlantDatabase) {
 
 			if (!user) {
 				return res.status(401).json({
-					error: "Unauthorized",
-					message: "Invalid API key",
+					error: 'Unauthorized',
+					message: 'Invalid API key',
 				});
 			}
 
@@ -54,10 +54,10 @@ export function createAuthMiddleware(db: PlantDatabase) {
 			req.userEmail = user.email;
 			next();
 		} catch (error) {
-			console.error("Authentication error:", error);
+			console.error('Authentication error:', error);
 			return res.status(500).json({
-				error: "Internal server error",
-				message: "Authentication failed",
+				error: 'Internal server error',
+				message: 'Authentication failed',
 			});
 		}
 	};
