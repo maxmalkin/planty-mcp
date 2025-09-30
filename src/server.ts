@@ -243,7 +243,13 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 	try {
 		switch (name) {
 			case "add_plant": {
-				if (args?.plantId === undefined) {
+				if (
+					!args?.name ||
+					!args?.species ||
+					!args?.location ||
+					!args?.acquiredDate ||
+					!args?.wateringFrequency
+				) {
 					return {
 						content: [
 							{
