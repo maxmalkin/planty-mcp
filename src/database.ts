@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import { v4 as uuidv4 } from "uuid";
-import { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
 import path from "path";
 import { fileURLToPath } from "url";
 
