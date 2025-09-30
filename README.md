@@ -2,19 +2,25 @@
 
 An MCP server for plant care management. This is a personal project providing tools to track plants, watering schedules, growth measurements, and images.
 
-## Prod
+## Usage
 
-Production: https://planty-mcp.onrender.com
+1. Visit https://planty-mcp.onrender.com
+2. Click "Generate API Key"
+3. Save the API key
+4. Configure your MCP client
+   - Endpoint: `https://planty-mcp.onrender.com/sse`
+   - API Key: `planty_live_xxx...`
+   - Use Bearer token
+5. Start using `planty-mcp`
 
 ## Architecture
 
 ```
 ┌─────────────────┐         ┌─────────────────┐
 │   MCP Client    │         │   Web Client    │
-│ (Claude Desktop)│         │   (Browser)     │
 └────────┬────────┘         └────────┬────────┘
          │                           │
-         │ STDIO                     │ HTTPS
+         │ STDIO                     │ HTTPS + Bearer Token
          │                           │
          v                           v
 ┌────────────────────────────────────────────┐
@@ -24,20 +30,32 @@ Production: https://planty-mcp.onrender.com
 │  │ (server.ts)  │      │   (http.ts)     │ │
 │  └──────┬───────┘      └────────┬────────┘ │
 │         │                       │          │
-│         │    ┌──────────────────┘          │
-│         │    │                             │
-│         v    v                             │
-│  ┌─────────────────┐   ┌────────────────┐  │
-│  │  PlantDatabase  │   │  Auth/Routes   │  │
-│  │  (database.ts)  │   │  API Keys      │  │
-│  └────────┬────────┘   └────────────────┘  │
-└───────────┼──────────────────────────────-─┘
-            │
-            v
-   ┌────────────────┐
-   │   PostgreSQL   │
-   │    Database    │
-   └────────────────┘
+│         │                       v          │
+│         │              ┌─────────────────┐ │
+│         │              │ Auth Middleware │ │
+│         │              │  (validates     │ │
+│         │              │   API keys)     │ │
+│         │              └────────┬────────┘ │
+│         │                       │          │
+│         │                       v          │
+│         │              ┌─────────────────┐ │
+│         │              │  API Routes     │ │
+│         │              │ /api/me         │ │
+│         │              │ /api/add-email  │ │
+│         │              └────────┬────────┘ │
+│         │                       │          │
+│         v                       v          │
+│  ┌──────────────────────────────────────┐  │
+│  │         PlantDatabase                │  │
+│  │  - Users & API Keys (auth)           │  │
+│  │  - Plants, Watering, Growth, Images  │  │
+│  └────────────────┬─────────────────────┘  │
+└────────────────────┼────────────────────────┘
+                     │
+                     v
+            ┌────────────────┐
+            │   PostgreSQL   │
+            └────────────────┘
 ```
 
 ## Features
@@ -83,11 +101,12 @@ docker-compose up -d
 
 ### HTTP
 
-- `GET /` - Landing
-- `POST /api/generate-key` - Generate API key
-- `GET /api/me` - Get user info
-- `POST /api/add-email` - Add email to account
-- `GET /sse` - MCP connection through SSE
+- `GET /` - Landing (public)
+- `GET /health` - Health check (public)
+- `POST /api/generate-key` - Generate API key (public)
+- `GET /api/me` - Get user info (auth)
+- `POST /api/add-email` - Add email (auth)
+- `GET /sse` - MCP connection through SSE (auth)
 
 ### Tools
 
