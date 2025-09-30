@@ -2,9 +2,16 @@
 
 An MCP server for plant care management. This is a personal project providing tools to track plants, watering schedules, growth measurements, and images.
 
-## Prod
+## Usage
 
-Production: https://planty-mcp.onrender.com
+1. Visit https://planty-mcp.onrender.com
+2. Click "Generate API Key"
+3. Save the API key
+4. Configure your MCP client
+   - Endpoint: `https://planty-mcp.onrender.com/sse`
+   - API Key: `planty_live_xxx...`
+   - Use Bearer token
+5. Start using `planty-mcp`
 
 ## Architecture
 
