@@ -2,8 +2,6 @@
  * @description Default data shapes.
  */
 
-import type { StringMappingType } from "typescript";
-
 /**
  * acquiredDate and lastWatered are ISO format.
  * wateringFrequency is in days.
