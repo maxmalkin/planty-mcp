@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { PlantDatabase } from "./database";
+import type { Request, Response, NextFunction } from "express";
+import type { PlantDatabase } from "./database";
 
 export interface AuthenticatedRequest extends Request {
 	userId?: string;
@@ -19,6 +19,12 @@ export function createMiddleware(db: PlantDatabase) {
 		const authHeader = req.headers.authorization;
 
 		if (!authHeader || !authHeader.startsWith("Bearer ")) {
+			return res.status(401).json({ error: "Unauthorized" });
+		}
+
+		const key = authHeader.substring(7);
+
+		if (!key.startsWith("planty")) {
 			return res.status(401).json({ error: "Unauthorized" });
 		}
 	};
