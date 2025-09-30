@@ -116,4 +116,12 @@ export class PlantDatabase {
 
 		return { id, ...plant, createdAt: now, updatedAt: now };
 	}
+
+	getPlant(id: string): Plant | undefined {
+		const stmt = this.db.prepare(`SELECT * FROM plants WHERE id = ?`);
+		const row = stmt.get(id);
+
+		//technically any but we know it fits Plant shape
+		return stmt.get(id) as Plant | undefined;
+	}
 }
