@@ -5,14 +5,13 @@
 	"scripts": {
 		"start": "node build/server.js",
 		"dev": "tsx src/server.ts",
-    "dev:db": "tsx src/database.ts",
+		"dev:db": "tsx src/database.ts",
 		"build": "tsc",
 		"lint": "biome lint",
 		"lint:fix": "exec biome format --write"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
-		"@types/better-sqlite3": "^7.6.13",
 		"@types/bun": "latest",
 		"@types/lodash": "^4.17.20",
 		"@types/node": "^24.6.0",
@@ -25,6 +24,7 @@
 	},
 	"dependencies": {
 		"@modelcontextprotocol/sdk": "^1.18.2",
+		"@types/better-sqlite3": "^7.6.13",
 		"better-sqlite3": "^12.4.1",
 		"lodash": "^4.17.21",
 		"uuid": "^13.0.0"
