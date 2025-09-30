@@ -2,6 +2,8 @@
  * @description Default data shapes.
  */
 
+import type { StringMappingType } from "typescript";
+
 /**
  * acquiredDate and lastWatered are ISO format.
  * wateringFrequency is in days.
@@ -41,5 +43,17 @@ export interface GrowthLog {
 	measureUnit: "cm" | "inches" | "count" | "other";
 	value: "number";
 	notes: "string | null";
+	createdAt: string;
+}
+
+/**
+ * takenAt and createdAt are ISO format.
+ */
+export interface PlantImage {
+	id: string;
+	plantId: string;
+	filename: string;
+	caption: string | null;
+	takenAt: string;
 	createdAt: string;
 }
