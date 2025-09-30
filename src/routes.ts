@@ -1,8 +1,8 @@
 import express from 'express';
-import type { PlantDatabase } from './database.js';
-import type { AuthenticatedRequest } from './auth.js';
+import type { PlantDatabase } from './database.ts';
+import type { AuthenticatedRequest } from './auth.ts';
 
-export function createRoutes(db: PlantDatabase) {
+export function createRoutes(db: PlantDatabase): express.Router {
 	const router = express.Router();
 
 	router.post('/generate-key', async (req, res) => {
