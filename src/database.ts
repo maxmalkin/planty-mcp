@@ -594,6 +594,40 @@ export class PlantDatabase {
 			throw error;
 		}
 	}
+
+	async getUserApiKeys(userId: string): Promise<
+		Array<{
+			id: string;
+			keyPrefix: string;
+			createdAt: string;
+			lastUsedAt: string | null;
+		}>
+	> {
+		const result = await this.pool.query(
+			`SELECT id, key_prefix, created_at, last_used_at
+		FROM api_keys
+		WHERE user_id = $1 AND is_active = true
+		ORDER BY created_at DESC`,
+			[userId]
+		);
+
+		return result.rows.map((row) => ({
+			id: row.id,
+			keyPrefix: row.key_prefix,
+			createdAt: this.toISOString(row.created_at) as string,
+			lastUsedAt: this.toISOString(row.last_used_at),
+		}));
+	}
+
+	async revokeApiKey(keyHash: string): Promise<boolean> {
+		const result = await this.pool.query(
+			`UPDATE api_keys SET is_active = false WHERE key_hash = $1`,
+			[this.hashApiKey(keyHash)]
+		);
+
+		return result.rowCount !== null && result.rowCount > 0;
+	}
+
 	async close(): Promise<void> {
 		await this.pool.end();
 	}
