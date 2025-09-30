@@ -223,6 +223,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 				},
 			},
+			{
+				name: "get_plant_images",
+				description: "Get images for a specific plant.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+					},
+					required: ["plantId"],
+				},
+			},
 		],
 	};
 });
