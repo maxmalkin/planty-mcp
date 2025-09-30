@@ -2,7 +2,7 @@
 
 An MCP server for plant care management. This is a personal project providing tools to track plants, watering schedules, growth measurements, and images.
 
-## Hosted Instance
+## Prod
 
 Production: https://planty-mcp.onrender.com
 
