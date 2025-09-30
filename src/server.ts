@@ -6,7 +6,6 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { PlantDatabase } from "./database";
-import { isConstructorDeclaration } from "typescript";
 
 const db = new PlantDatabase();
 
