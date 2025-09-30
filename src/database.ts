@@ -2,6 +2,7 @@ import pg from "pg";
 import { v4 as uuidv4 } from "uuid";
 import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types.js";
 import { dbConfig } from "./config.js";
+import crypto from "crypto";
 import _ from "lodash";
 
 const { Pool } = pg;
@@ -524,6 +525,46 @@ export class PlantDatabase {
 			takenAt: this.toISOString(row.taken_at) as string,
 			createdAt: this.toISOString(row.created_at) as string,
 		}));
+	}
+
+	generateApiKey(): string {
+		const randomBytes = crypto.randomBytes(24).toString("base64url");
+		return `planty-${randomBytes}`;
+	}
+
+	private hashApiKey(apiKey: string): string {
+		return crypto.createHash("sha256").update(apiKey).digest("hex");
+	}
+
+	async createApiKey(userId: string): Promise<string> {
+		const key = this.generateApiKey();
+		const hash = this.hashApiKey(key);
+		const prefix = key.substring(0, 16);
+		const id = uuidv4();
+		const now = new Date().toISOString();
+
+		await this.pool.query(
+			`INSERT INTO api_keys (id, user_id, key_hash, key_prefix, created_at)
+			VALUES ($1, $2, $3, $4, $5)`,
+			[id, userId, hash, prefix, now]
+		);
+
+		return key;
+	}
+
+	async getUserByApiKey(apiKey: string): Promise<User | undefined> {
+		const hash = this.hashApiKey(apiKey);
+
+		const result = await this.pool.query(
+			`SELECT u.id, u.email, u.created_at
+			FROM users u
+			JOIN api_keys a ON u.id = a.user_id
+			WHERE a.key_hash = $1 and a.is_active = true
+			`,
+			[hash]
+		);
+
+		if (result.rows.length === 0) return undefined;
 	}
 
 	async close(): Promise<void> {
