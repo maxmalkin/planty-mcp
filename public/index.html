@@ -109,20 +109,34 @@
 	<body>
 		<div class="container">
 			<h1>Planty</h1>
-			<p class="subtitle">Your Personal Plant Care Assistant</p>
+			<p class="subtitle">MCP Server for Plant Care</p>
 
 			<button class="btn" id="generateBtn" onclick="generateKey()">
-				Generate My API Key
+				Generate API Key
 			</button>
 
 			<div class="key-display" id="keyDisplay">
 				<h3>Your API Key</h3>
 				<div class="api-key" id="apiKey"></div>
 				<button class="btn" onclick="copyKey()">Copy to Clipboard</button>
-				<p class="warning">Save this key! You won't be able to see it again.</p>
+				<p class="warning">Save this key. You won't be able to see it again.</p>
 
 				<div class="email-section">
-					<h4>Optional: Add Email for Recovery</h4>
+					<h4>Setup Instructions</h4>
+					<p style="margin: 10px 0; font-size: 14px; color: #4a5568;">
+						Add this MCP server to Claude Desktop or ChatGPT:
+					</p>
+					<div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
+						<strong>Endpoint:</strong><br>
+						<code style="font-size: 12px;">https://planty-mcp.onrender.com/sse</code>
+					</div>
+					<div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
+						<strong>API Key:</strong><br>
+						<code style="font-size: 12px;" id="apiKeyInstructions"></code>
+					</div>
+					<p style="margin: 15px 0 10px 0; font-size: 14px; color: #4a5568;">
+						Optional: Add email for recovery
+					</p>
 					<input type="email" id="emailInput" placeholder="your@email.com" />
 					<button class="btn" onclick="addEmail()">Save Email</button>
 					<p class="success" id="emailSuccess" style="display: none">
@@ -150,12 +164,13 @@
 					currentApiKey = data.apiKey;
 
 					document.getElementById("apiKey").textContent = currentApiKey;
+					document.getElementById("apiKeyInstructions").textContent = currentApiKey;
 					document.getElementById("keyDisplay").classList.add("show");
 					btn.style.display = "none";
 				} catch (error) {
 					alert("Error generating key. Please try again.");
 					btn.disabled = false;
-					btn.textContent = "Generate My API Key";
+					btn.textContent = "Generate API Key";
 				}
 			}
 
