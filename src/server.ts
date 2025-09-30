@@ -455,7 +455,11 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 					updates.wateringFrequency = args.wateringFrequency;
 				if (typeof args?.notes === 'string') updates.notes = args.notes;
 
-				const plant = await db.updatePlant(USER_ID, args.plantId as string, updates);
+				const plant = await db.updatePlant(
+					USER_ID,
+					args.plantId as string,
+					updates,
+				);
 
 				if (!plant) {
 					return {
@@ -494,7 +498,11 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				const log = await db.addGrowthLog(USER_ID, {
 					plantId: args.plantId as string,
 					logDate: args.date as string,
-					measureType: args.measureType as 'height' | 'width' | 'leafCount' | 'other',
+					measureType: args.measureType as
+						| 'height'
+						| 'width'
+						| 'leafCount'
+						| 'other',
 					measureUnit: args.measureUnit as 'cm' | 'inches' | 'count' | 'other',
 					value: args.value as number,
 					notes: (args.notes as string | undefined) || null,
