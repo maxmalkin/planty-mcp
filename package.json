@@ -8,7 +8,7 @@
 		"dev": "tsx src/server.ts",
 		"dev:http": "tsx src/http.ts",
 		"dev:db": "tsx src/database.ts",
-		"build": "tsc",
+		"build": "tsc && cp -r public build/",
 		"lint": "biome lint",
 		"lint:fix": "biome format --write"
 	},
