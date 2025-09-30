@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Planty - Plant Care MCP Assistant</title>
+		<title>planty-mcp</title>
 		<style>
 			* {
 				margin: 0;
@@ -11,138 +11,215 @@
 				box-sizing: border-box;
 			}
 			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-					sans-serif;
-				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				font-family: "Courier New", Courier, monospace;
+				background: #0a0a0a;
+				color: #c0c0c0;
 				min-height: 100vh;
 				display: flex;
 				align-items: center;
 				justify-content: center;
 				padding: 20px;
+				line-height: 1.6;
 			}
 			.container {
-				background: white;
-				border-radius: 20px;
-				padding: 40px;
-				max-width: 500px;
+				max-width: 700px;
 				width: 100%;
-				box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+				text-align: center;
 			}
 			h1 {
-				color: #2d3748;
-				margin-bottom: 10px;
-				text-align: center;
+				font-size: 2em;
+				font-weight: bold;
+				color: #ffffff;
+				margin-bottom: 40px;
+				letter-spacing: 2px;
 			}
-			.subtitle {
-				color: #718096;
-				text-align: center;
-				margin-bottom: 30px;
+			.ascii-plant {
+				font-size: 14px;
+				line-height: 1.2;
+				margin: 30px 0;
+				white-space: pre;
+			}
+			.green {
+				color: #4ade80;
+				font-weight: 900;
+			}
+			.yellow {
+				color: #facc15;
+				font-weight: 900;
+			}
+			.red {
+				color: #f87171;
+				font-weight: 900;
+			}
+			.tagline {
+				font-size: 1em;
+				margin: 30px 0 15px 0;
+				color: #a0a0a0;
+				font-weight: 900;
+			}
+			.description {
+				font-size: 0.9em;
+				color: #808080;
+				margin-bottom: 40px;
+				font-weight: 900;
 			}
 			.btn {
-				background: #48bb78;
-				color: white;
-				border: none;
-				padding: 15px 30px;
-				border-radius: 10px;
-				font-size: 16px;
-				font-weight: 600;
+				background: transparent;
+				color: #4ade80;
+				border: 1px solid #4ade80;
+				padding: 12px 24px;
+				font-family: "Courier New", Courier, monospace;
+				font-size: 14px;
 				cursor: pointer;
-				width: 100%;
-				transition: all 0.3s;
+				transition: all 0.2s;
+				margin: 10px 0;
 			}
 			.btn:hover {
-				background: #38a169;
-				transform: translateY(-2px);
+				background: #4ade80;
+				color: #0a0a0a;
 			}
 			.btn:disabled {
-				background: #cbd5e0;
+				border-color: #404040;
+				color: #404040;
 				cursor: not-allowed;
 			}
+			.btn:disabled:hover {
+				background: transparent;
+				color: #404040;
+			}
 			.key-display {
-				background: #f7fafc;
-				border: 2px solid #e2e8f0;
-				border-radius: 10px;
-				padding: 20px;
-				margin: 20px 0;
+				margin-top: 40px;
+				text-align: left;
 				display: none;
 			}
 			.key-display.show {
 				display: block;
 			}
+			.section-title {
+				color: #ffffff;
+				font-weight: bold;
+				margin: 20px 0 10px 0;
+			}
 			.api-key {
-				font-family: "Courier New", monospace;
-				font-size: 14px;
-				word-break: break-all;
-				background: white;
+				background: #1a1a1a;
+				border: 1px solid #333;
 				padding: 15px;
-				border-radius: 5px;
+				margin: 10px 0;
+				word-break: break-all;
+				color: #4ade80;
+				font-size: 13px;
+			}
+			.info-box {
+				background: #1a1a1a;
+				border: 1px solid #333;
+				padding: 15px;
 				margin: 10px 0;
 			}
-			.warning {
-				color: #c53030;
-				font-size: 14px;
-				margin-top: 10px;
+			.info-box strong {
+				color: #ffffff;
+				display: block;
+				margin-bottom: 5px;
 			}
-			.email-section {
-				margin-top: 30px;
-				padding-top: 30px;
-				border-top: 1px solid #e2e8f0;
+			.info-box code {
+				color: #4ade80;
+				font-size: 13px;
+			}
+			.warning {
+				color: #f87171;
+				font-size: 13px;
+				margin: 10px 0;
 			}
 			input {
 				width: 100%;
 				padding: 12px;
-				border: 2px solid #e2e8f0;
-				border-radius: 8px;
+				background: #1a1a1a;
+				border: 1px solid #333;
+				color: #c0c0c0;
+				font-family: "Courier New", Courier, monospace;
 				font-size: 14px;
 				margin: 10px 0;
 			}
 			input:focus {
 				outline: none;
-				border-color: #667eea;
+				border-color: #4ade80;
 			}
 			.success {
-				color: #38a169;
+				color: #4ade80;
 				margin-top: 10px;
+			}
+			.divider {
+				border-top: 1px solid #333;
+				margin: 30px 0;
+			}
+			a {
+				color: #4ade80;
+				text-decoration: none;
+			}
+			a:hover {
+				text-decoration: underline;
 			}
 		</style>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Planty</h1>
-			<p class="subtitle">MCP Server for Plant Care</p>
+			<h1>planty-mcp</h1>
+
+			<div class="ascii-plant">
+<span class="green">     /\</span>              <span class="yellow">    ////</span>              <span class="green">   \|/</span>
+<span class="green">    //\\</span>             <span class="yellow">   //  \\</span>             <span class="green">    |</span>
+<span class="yellow">   ||  ||</span>            <span class="green">  ||    ||</span>            <span class="yellow">    |</span>
+<span class="yellow">   ||  ||</span>            <span class="green">  ||    ||</span>            <span class="yellow">   / \</span>
+<span class="green">   ||  ||</span>            <span class="green">//||    ||\\</span>           <span class="green">  // \\</span>
+<span class="green">   ||  ||</span>           <span class="green">// ||    || \\</span>          <span class="green"> //   \\</span>
+<span class="green">   ||  ||</span>           <span class="green">||  ||    ||  ||</span>         <span class="green"> ||   ||</span>
+<span class="red">  ========</span>          <span class="red">========== ======</span>        <span class="red">=========</span>
+<span class="red">  |      |</span>          <span class="red">|        | |    |</span>        <span class="red">|       |</span>
+<span class="red">  |      |</span>          <span class="red">|        | |    |</span>        <span class="red">|       |</span>
+<span class="red">  |______|</span>          <span class="red">|________| |____|</span>        <span class="red">|_______|</span>
+			</div>
+
+			<p class="tagline">MCP server for your plants</p>
+			<p class="description">
+				Manage your plants, watering schedules, growth tracking, and care notes
+			</p>
 
 			<button class="btn" id="generateBtn" onclick="generateKey()">
-				Generate API Key
+				[ GENERATE API KEY ]
 			</button>
 
 			<div class="key-display" id="keyDisplay">
-				<h3>Your API Key</h3>
+				<div class="section-title">&gt; YOUR API KEY</div>
 				<div class="api-key" id="apiKey"></div>
-				<button class="btn" onclick="copyKey()">Copy to Clipboard</button>
-				<p class="warning">Save this key. You won't be able to see it again.</p>
+				<button class="btn" onclick="copyKey()">[ COPY TO CLIPBOARD ]</button>
+				<p class="warning">
+					! Save this key. You won't be able to see it again.
+				</p>
 
-				<div class="email-section">
-					<h4>Setup Instructions</h4>
-					<p style="margin: 10px 0; font-size: 14px; color: #4a5568;">
-						Add this MCP server to Claude Desktop or ChatGPT:
-					</p>
-					<div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
-						<strong>Endpoint:</strong><br>
-						<code style="font-size: 12px;">https://planty-mcp.onrender.com/sse</code>
-					</div>
-					<div style="background: white; padding: 15px; border-radius: 5px; margin: 10px 0;">
-						<strong>API Key:</strong><br>
-						<code style="font-size: 12px;" id="apiKeyInstructions"></code>
-					</div>
-					<p style="margin: 15px 0 10px 0; font-size: 14px; color: #4a5568;">
-						Optional: Add email for recovery
-					</p>
-					<input type="email" id="emailInput" placeholder="your@email.com" />
-					<button class="btn" onclick="addEmail()">Save Email</button>
-					<p class="success" id="emailSuccess" style="display: none">
-						Email saved!
-					</p>
+				<div class="divider"></div>
+
+				<div class="section-title">&gt; SETUP INSTRUCTIONS</div>
+				<p class="description">
+					Add this MCP server to Claude Desktop or ChatGPT:
+				</p>
+
+				<div class="info-box">
+					<strong>ENDPOINT:</strong>
+					<code>https://planty-mcp.onrender.com/sse</code>
 				</div>
+
+				<div class="info-box">
+					<strong>API KEY:</strong>
+					<code id="apiKeyInstructions"></code>
+				</div>
+
+				<div class="divider"></div>
+
+				<div class="section-title">&gt; OPTIONAL: EMAIL RECOVERY</div>
+				<input type="email" id="emailInput" placeholder="your@email.com" />
+				<button class="btn" onclick="addEmail()">[ SAVE EMAIL ]</button>
+				<p class="success" id="emailSuccess" style="display: none">
+					✓ Email saved
+				</p>
 			</div>
 		</div>
 
@@ -164,7 +241,8 @@
 					currentApiKey = data.apiKey;
 
 					document.getElementById("apiKey").textContent = currentApiKey;
-					document.getElementById("apiKeyInstructions").textContent = currentApiKey;
+					document.getElementById("apiKeyInstructions").textContent =
+						currentApiKey;
 					document.getElementById("keyDisplay").classList.add("show");
 					btn.style.display = "none";
 				} catch (error) {

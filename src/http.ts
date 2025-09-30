@@ -1,13 +1,13 @@
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import express from "express";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-import cors from "cors";
-import { PlantDatabase } from "./database.js";
-import { createAuthMiddleware, type AuthenticatedRequest } from "./auth.js";
-import { createRoutes } from "./routes.js";
-import { setupToolHandlers } from "./handlers.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import express from 'express';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
+import cors from 'cors';
+import { PlantDatabase } from './database.js';
+import { createAuthMiddleware, type AuthenticatedRequest } from './auth.js';
+import { createRoutes } from './routes.js';
+import { setupToolHandlers } from './handlers.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,32 +17,32 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(__dirname, '../public')));
 
 const db = new PlantDatabase();
 
 app.use(createAuthMiddleware(db));
-app.use("/api", createRoutes(db));
+app.use('/api', createRoutes(db));
 
 const mcpServers = new Map<string, Server>();
 
-app.get("/sse", async (req: AuthenticatedRequest, res) => {
+app.get('/sse', async (req: AuthenticatedRequest, res) => {
 	if (!req.userId) {
-		return res.status(401).send("Unauthorized");
+		return res.status(401).send('Unauthorized');
 	}
 	const userId = req.userId;
 	console.info(`SSE client connected: ${userId}`);
 
 	const server = new Server(
 		{
-			name: "planty-mcp",
-			version: "1.0.0",
+			name: 'planty-mcp',
+			version: '1.0.0',
 		},
 		{
 			capabilities: {
 				tools: {},
 			},
-		}
+		},
 	);
 
 	setupToolHandlers(server, db, userId);
@@ -51,16 +51,16 @@ app.get("/sse", async (req: AuthenticatedRequest, res) => {
 	const sessionId = `${userId}-${Date.now()}`;
 	mcpServers.set(sessionId, server);
 
-	const transport = new SSEServerTransport("/message", res);
+	const transport = new SSEServerTransport('/message', res);
 	await server.connect(transport);
 
-	req.on("close", () => {
-		console.info("SSE client disconnected:", userId);
+	req.on('close', () => {
+		console.info('SSE client disconnected:', userId);
 		mcpServers.delete(sessionId);
 	});
 });
 
-app.post("/message", async (req: AuthenticatedRequest, res) => {
+app.post('/message', async (req: AuthenticatedRequest, res) => {
 	// This endpoint receives MCP messages from the client
 	// The SSEServerTransport handles routing to the correct server instance
 	res.status(200).end();
@@ -77,6 +77,6 @@ async function main() {
 }
 
 main().catch((error) => {
-	console.error("Failed to start server:", error);
+	console.error('Failed to start server:', error);
 	process.exit(1);
 });
