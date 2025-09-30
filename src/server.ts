@@ -451,6 +451,18 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				};
 			}
 
+			case "get_growth_logs": {
+				const logs = await db.getGrowthLogs(args?.plantId as string);
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(logs, null, 2),
+						},
+					],
+				};
+			}
+
 			default: {
 				return {
 					content: [
