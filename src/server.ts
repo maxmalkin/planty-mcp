@@ -126,6 +126,61 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					},
 				},
 			},
+			{
+				name: "delete_plant",
+				description: "Delete a plant from the database by its ID.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+					},
+					required: ["plantId"],
+				},
+			},
+			{
+				name: "update_plant",
+				description: "Update information about an existing plant.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+						name: { type: "string", description: "The name of the plant." },
+						species: {
+							type: "string",
+							description: "The species of the plant.",
+						},
+						location: {
+							type: "string",
+							description: "The location of the plant.",
+						},
+						acquiredDate: {
+							type: "string",
+							description: "The date the plant was acquired (ISO format).",
+						},
+						wateringFrequency: {
+							type: "number",
+							description: "How often the plant needs to be watered, in days.",
+						},
+						notes: {
+							type: "string",
+							description: "Any additional care notes.",
+						},
+					},
+					required: ["plantId"],
+				},
+			},
+			{
+				name: "list_watering_history",
+				description:
+					"List the watering history for a specific plant by its ID.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+					},
+					required: ["plantId"],
+				},
+			},
 		],
 	};
 });
