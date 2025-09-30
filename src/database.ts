@@ -280,7 +280,7 @@ export class PlantDatabase {
 		const now = new Date().toISOString();
 
 		const stmt = this.db.prepare(`
-			INSER INTO plant_images (
+			INSERT INTO plant_images (
 				id, plantId, filename, caption, takenAt, createdAt
 			)
 			VALUES (?, ?, ?, ?, ?, ?)
@@ -307,7 +307,7 @@ export class PlantDatabase {
 	getPlantImages(plantId: string): PlantImage[] {
 		const stmt = this.db.prepare(`
 			SELECT * FROM plant_images
-			WHERE plantID = ?
+			WHERE plantId = ?
 			ORDER BY takenAt DESC
 		`);
 
