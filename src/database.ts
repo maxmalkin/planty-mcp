@@ -1,9 +1,9 @@
-import pg from "pg";
-import { v4 as uuidv4 } from "uuid";
-import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types.js";
-import { dbConfig } from "./config.js";
-import crypto from "crypto";
-import _ from "lodash";
+import pg from 'pg';
+import { v4 as uuidv4 } from 'uuid';
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from './types.js';
+import { dbConfig } from './config.js';
+import crypto from 'crypto';
+import _ from 'lodash';
 
 const { Pool } = pg;
 
@@ -31,15 +31,15 @@ export class PlantDatabase {
 	async initialize(): Promise<boolean> {
 		try {
 			const client = await this.pool.connect();
-			console.log("Connected to PostgreSQL database");
+			console.log('Connected to PostgreSQL database');
 
 			await this.initializeDatabase(client);
 			client.release();
 
-			console.log("Database initialized successfully.");
+			console.log('Database initialized successfully.');
 			return true;
 		} catch (error) {
-			console.error("Failed to initialize database:", error);
+			console.error('Failed to initialize database:', error);
 			return false;
 		}
 	}
@@ -140,7 +140,7 @@ export class PlantDatabase {
 		await client.query(createPlantImagesTable);
 
 		const indexStatements = createIndexes
-			.split(";")
+			.split(';')
 			.map((s) => s.trim())
 			.filter((s) => s.length > 0);
 
@@ -151,7 +151,7 @@ export class PlantDatabase {
 
 	private toISOString(date: Date | string | null): string | null {
 		if (!date) return null;
-		if (typeof date === "string") return date;
+		if (typeof date === 'string') return date;
 		return date.toISOString();
 	}
 
@@ -161,12 +161,12 @@ export class PlantDatabase {
 
 		try {
 			await this.pool.query(
-				"INSERT INTO users (id, email, created_at) VALUES ($1, $2, $3)",
-				[id, email, now]
+				'INSERT INTO users (id, email, created_at) VALUES ($1, $2, $3)',
+				[id, email, now],
 			);
 			return id;
 		} catch (error: any) {
-			if (error.code === "23505") {
+			if (error.code === '23505') {
 				const existing = await this.getUserByEmail(email);
 				if (existing) return existing.id;
 			}
@@ -176,8 +176,8 @@ export class PlantDatabase {
 
 	async getUserByEmail(email: string): Promise<User | undefined> {
 		const result = await this.pool.query(
-			"SELECT id, email, created_at FROM users WHERE email = $1",
-			[email]
+			'SELECT id, email, created_at FROM users WHERE email = $1',
+			[email],
 		);
 
 		if (result.rows.length === 0) return undefined;
@@ -192,8 +192,8 @@ export class PlantDatabase {
 
 	async getUserById(id: string): Promise<User | undefined> {
 		const result = await this.pool.query(
-			"SELECT id, email, created_at FROM users WHERE id = $1",
-			[id]
+			'SELECT id, email, created_at FROM users WHERE id = $1',
+			[id],
 		);
 
 		if (result.rows.length === 0) return undefined;
@@ -208,7 +208,7 @@ export class PlantDatabase {
 
 	async addPlant(
 		userId: string,
-		plant: Omit<Plant, "id" | "createdAt" | "updatedAt">
+		plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>,
 	): Promise<Plant> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -230,7 +230,7 @@ export class PlantDatabase {
 				plant.notes,
 				now,
 				now,
-			]
+			],
 		);
 
 		return { id, ...plant, createdAt: now, updatedAt: now };
@@ -238,8 +238,8 @@ export class PlantDatabase {
 
 	async getPlant(userId: string, id: string): Promise<Plant | undefined> {
 		const result = await this.pool.query(
-			"SELECT * FROM plants WHERE id = $1 AND user_id = $2",
-			[id, userId]
+			'SELECT * FROM plants WHERE id = $1 AND user_id = $2',
+			[id, userId],
 		);
 
 		if (result.rows.length === 0) return undefined;
@@ -264,9 +264,9 @@ export class PlantDatabase {
 		filters?: {
 			location?: string;
 			species?: string;
-		}
+		},
 	): Promise<Plant[]> {
-		let query = "SELECT * FROM plants WHERE user_id = $1";
+		let query = 'SELECT * FROM plants WHERE user_id = $1';
 		const params: any[] = [userId];
 		let paramIndex = 2;
 
@@ -282,7 +282,7 @@ export class PlantDatabase {
 			}
 		}
 
-		query += " ORDER BY name";
+		query += ' ORDER BY name';
 
 		const result = await this.pool.query(query, params);
 
@@ -303,7 +303,7 @@ export class PlantDatabase {
 	async updatePlant(
 		userId: string,
 		id: string,
-		updates: Partial<Omit<Plant, "id" | "createdAt" | "updatedAt">>
+		updates: Partial<Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>>,
 	): Promise<Plant | undefined> {
 		const exists = await this.getPlant(userId, id);
 		if (!exists) return undefined;
@@ -312,9 +312,9 @@ export class PlantDatabase {
 		if (fields.length === 0) return exists;
 
 		const dbFieldMap: Record<string, string> = {
-			acquiredDate: "acquired_date",
-			wateringFrequency: "watering_frequency",
-			lastWatered: "last_watered",
+			acquiredDate: 'acquired_date',
+			wateringFrequency: 'watering_frequency',
+			lastWatered: 'last_watered',
 		};
 
 		const setClause = fields
@@ -322,10 +322,10 @@ export class PlantDatabase {
 				const dbField = dbFieldMap[field] || field;
 				return `${dbField} = $${index + 1}`;
 			})
-			.join(", ");
+			.join(', ');
 
 		const values = fields.map(
-			(field) => updates[field as keyof typeof updates]
+			(field) => updates[field as keyof typeof updates],
 		);
 
 		const now = new Date().toISOString();
@@ -335,7 +335,7 @@ export class PlantDatabase {
 			SET ${setClause}, 
 			updated_at = $${fields.length + 1}
 			WHERE id = $${fields.length + 2} AND user_id = $${fields.length + 3}`,
-			[...values, now, id, userId]
+			[...values, now, id, userId],
 		);
 
 		return this.getPlant(userId, id);
@@ -343,8 +343,8 @@ export class PlantDatabase {
 
 	async deletePlant(userId: string, id: string): Promise<boolean> {
 		const result = await this.pool.query(
-			"DELETE FROM plants WHERE id = $1 AND user_id = $2",
-			[id, userId]
+			'DELETE FROM plants WHERE id = $1 AND user_id = $2',
+			[id, userId],
 		);
 
 		return result.rowCount !== null && result.rowCount > 0;
@@ -354,7 +354,7 @@ export class PlantDatabase {
 		userId: string,
 		plantId: string,
 		wateredDate: string,
-		notes?: string
+		notes?: string,
 	): Promise<WateringHistory | undefined> {
 		const plant = await this.getPlant(userId, plantId);
 		if (!plant) return undefined;
@@ -367,7 +367,7 @@ export class PlantDatabase {
 				id, user_id, plant_id, watered_date, notes, created_at
 			) 
 			VALUES ($1, $2, $3, $4, $5, $6)`,
-			[id, userId, plantId, wateredDate, notes || null, now]
+			[id, userId, plantId, wateredDate, notes || null, now],
 		);
 
 		await this.pool.query(
@@ -375,7 +375,7 @@ export class PlantDatabase {
 			SET last_watered = $1,
 			updated_at = $2
 			WHERE id = $3 AND user_id = $4`,
-			[wateredDate, now, plantId, userId]
+			[wateredDate, now, plantId, userId],
 		);
 
 		return {
@@ -389,13 +389,13 @@ export class PlantDatabase {
 
 	async getWateringHistory(
 		userId: string,
-		plantId: string
+		plantId: string,
 	): Promise<WateringHistory[]> {
 		const result = await this.pool.query(
 			`SELECT * FROM watering_history
 			WHERE plant_id = $1 AND user_id = $2
 			ORDER BY watered_date DESC`,
-			[plantId, userId]
+			[plantId, userId],
 		);
 
 		return result.rows.map((row) => ({
@@ -409,7 +409,7 @@ export class PlantDatabase {
 
 	async addGrowthLog(
 		userId: string,
-		log: Omit<GrowthLog, "id" | "createdAt">
+		log: Omit<GrowthLog, 'id' | 'createdAt'>,
 	): Promise<GrowthLog | undefined> {
 		const plant = await this.getPlant(userId, log.plantId);
 		if (!plant) return undefined;
@@ -432,7 +432,7 @@ export class PlantDatabase {
 				log.value,
 				log.notes || null,
 				now,
-			]
+			],
 		);
 
 		return { id, ...log, notes: log.notes || null, createdAt: now };
@@ -443,7 +443,7 @@ export class PlantDatabase {
 			`SELECT * FROM growth_logs
 			WHERE plant_id = $1 AND user_id = $2
 			ORDER BY log_date DESC`,
-			[plantId, userId]
+			[plantId, userId],
 		);
 
 		return result.rows.map((row) => ({
@@ -460,7 +460,7 @@ export class PlantDatabase {
 
 	async addPlantImage(
 		userId: string,
-		image: Omit<PlantImage, "id" | "createdAt">
+		image: Omit<PlantImage, 'id' | 'createdAt'>,
 	): Promise<PlantImage | undefined> {
 		const plant = await this.getPlant(userId, image.plantId);
 		if (!plant) return undefined;
@@ -481,7 +481,7 @@ export class PlantDatabase {
 				image.caption || null,
 				image.takenAt,
 				now,
-			]
+			],
 		);
 
 		return { id, ...image, caption: image.caption || null, createdAt: now };
@@ -489,11 +489,11 @@ export class PlantDatabase {
 
 	async getPlantImage(
 		userId: string,
-		id: string
+		id: string,
 	): Promise<PlantImage | undefined> {
 		const result = await this.pool.query(
-			"SELECT * FROM plant_images WHERE id = $1 AND user_id = $2",
-			[id, userId]
+			'SELECT * FROM plant_images WHERE id = $1 AND user_id = $2',
+			[id, userId],
 		);
 
 		if (result.rows.length === 0) return undefined;
@@ -514,7 +514,7 @@ export class PlantDatabase {
 			`SELECT * FROM plant_images
 			WHERE plant_id = $1 AND user_id = $2
 			ORDER BY taken_at DESC`,
-			[plantId, userId]
+			[plantId, userId],
 		);
 
 		return result.rows.map((row) => ({
@@ -528,12 +528,12 @@ export class PlantDatabase {
 	}
 
 	generateApiKey(): string {
-		const randomBytes = crypto.randomBytes(24).toString("base64url");
+		const randomBytes = crypto.randomBytes(24).toString('base64url');
 		return `planty-${randomBytes}`;
 	}
 
 	private hashApiKey(apiKey: string): string {
-		return crypto.createHash("sha256").update(apiKey).digest("hex");
+		return crypto.createHash('sha256').update(apiKey).digest('hex');
 	}
 
 	async createApiKey(userId: string): Promise<string> {
@@ -546,7 +546,7 @@ export class PlantDatabase {
 		await this.pool.query(
 			`INSERT INTO api_keys (id, user_id, key_hash, key_prefix, created_at)
 			VALUES ($1, $2, $3, $4, $5)`,
-			[id, userId, hash, prefix, now]
+			[id, userId, hash, prefix, now],
 		);
 
 		return key;
@@ -561,7 +561,7 @@ export class PlantDatabase {
 			JOIN api_keys a ON u.id = a.user_id
 			WHERE a.key_hash = $1 and a.is_active = true
 			`,
-			[hash]
+			[hash],
 		);
 
 		if (result.rows.length === 0) return undefined;
