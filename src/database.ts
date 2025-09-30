@@ -188,6 +188,7 @@ export class PlantDatabase {
 		const stmt = this.db.prepare("DELETE FROM plants WHERE id = ?");
 		const r = stmt.run(id);
 
+		// 0 if no row deleted, 1 if row deleted
 		return r.changes > 0;
 	}
 }
