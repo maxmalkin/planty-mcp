@@ -1,9 +1,9 @@
-import Database from "better-sqlite3";
-import { v4 as uuidv4 } from "uuid";
-import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
-import path from "path";
-import { fileURLToPath } from "url";
-import _ from "lodash";
+import Database from 'better-sqlite3';
+import { v4 as uuidv4 } from 'uuid';
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from './types';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import _ from 'lodash';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,14 +11,14 @@ const __dirname = path.dirname(__filename);
 export class PlantDatabase {
 	private db: Database.Database;
 
-	constructor(dbPath: string = path.join(__dirname, "../database/plants.db")) {
+	constructor(dbPath: string = path.join(__dirname, '../database/plants.db')) {
 		this.db = new Database(dbPath);
-		this.db.pragma("foreign_keys = ON");
+		this.db.pragma('foreign_keys = ON');
 
 		if (!this.initializeDatabase()) {
-			throw new Error("Failed to initialize database.");
+			throw new Error('Failed to initialize database.');
 		} else {
-			console.log("Database initialized successfully.");
+			console.log('Database initialized successfully.');
 		}
 	}
 
@@ -92,7 +92,7 @@ export class PlantDatabase {
 
 	// DB operations
 
-	addPlant(plant: Omit<Plant, "id" | "createdAt" | "updatedAt">): Plant {
+	addPlant(plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>): Plant {
 		const id = uuidv4();
 		const now = new Date().toISOString();
 		const stmt = this.db.prepare(`
@@ -112,7 +112,7 @@ export class PlantDatabase {
 			plant.lastWatered,
 			plant.notes,
 			now,
-			now
+			now,
 		);
 
 		return { id, ...plant, createdAt: now, updatedAt: now };
@@ -126,28 +126,28 @@ export class PlantDatabase {
 	}
 
 	listPlants(filters?: { location?: string; species?: string }): Plant[] {
-		let query = "SELECT * FROM plants";
+		let query = 'SELECT * FROM plants';
 		const params: string[] = [];
 
 		// build filtered query
 		if (filters) {
 			const conditions: string[] = [];
 			if (filters.location) {
-				conditions.push("location = ?");
+				conditions.push('location = ?');
 				params.push(filters.location);
 			}
 
 			if (filters.species) {
-				conditions.push("species = ?");
+				conditions.push('species = ?');
 				params.push(filters.species);
 			}
 
 			if (conditions.length > 0) {
-				query += " WHERE " + conditions.join(" AND ");
+				query += ' WHERE ' + conditions.join(' AND ');
 			}
 		}
 
-		query += " ORDER BY name";
+		query += ' ORDER BY name';
 
 		const stmt = this.db.prepare(query);
 		const rows = stmt.all(...params);
@@ -157,7 +157,7 @@ export class PlantDatabase {
 
 	updatePlant(
 		id: string,
-		updates: Partial<Omit<Plant, "id" | "createdAt" | "updatedAt">>
+		updates: Partial<Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>>,
 	): Plant | undefined {
 		const exists = this.getPlant(id);
 		if (!exists) return undefined;
@@ -165,9 +165,9 @@ export class PlantDatabase {
 		const fields = _.keys(updates);
 		if (fields.length === 0) return exists;
 
-		const set = fields.map((field) => `${field} = ?`).join(", ");
+		const set = fields.map((field) => `${field} = ?`).join(', ');
 		const values = fields.map(
-			(field) => updates[field as keyof typeof updates]
+			(field) => updates[field as keyof typeof updates],
 		);
 
 		const now = new Date().toISOString();
@@ -185,7 +185,7 @@ export class PlantDatabase {
 	}
 
 	deletePlant(id: string): boolean {
-		const stmt = this.db.prepare("DELETE FROM plants WHERE id = ?");
+		const stmt = this.db.prepare('DELETE FROM plants WHERE id = ?');
 		const r = stmt.run(id);
 
 		// 0 if no row deleted, 1 if row deleted
@@ -195,7 +195,7 @@ export class PlantDatabase {
 	waterPlant(
 		plantId: string,
 		wateredDate: string,
-		notes?: string
+		notes?: string,
 	): WateringHistory {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -239,7 +239,7 @@ export class PlantDatabase {
 		return rows as WateringHistory[];
 	}
 
-	addGrowthLog(log: Omit<GrowthLog, "id" | "createdAt">): GrowthLog {
+	addGrowthLog(log: Omit<GrowthLog, 'id' | 'createdAt'>): GrowthLog {
 		const id = uuidv4();
 		const now = new Date().toISOString();
 
@@ -258,7 +258,7 @@ export class PlantDatabase {
 			log.measureUnit,
 			log.value,
 			log.notes || null,
-			now
+			now,
 		);
 
 		return { id, ...log, notes: log.notes || null, createdAt: now };
@@ -275,7 +275,7 @@ export class PlantDatabase {
 		return rows as GrowthLog[];
 	}
 
-	addPlantImage(image: Omit<PlantImage, "id" | "createdAt"): PlantImage {
+	addPlantImage(image: Omit<PlantImage, 'id' | 'createdAt'>): PlantImage {
 		const id = uuidv4();
 		const now = new Date().toISOString();
 
@@ -284,9 +284,16 @@ export class PlantDatabase {
 				id, plantId, filename, caption, takenAt, createdAt
 			)
 			VALUES (?, ?, ?, ?, ?, ?)
-		`)
+		`);
 
-		stmt.run(id, image.plantId, image.filename, image.caption || null, image.takenAt, now);
+		stmt.run(
+			id,
+			image.plantId,
+			image.filename,
+			image.caption || null,
+			image.takenAt,
+			now,
+		);
 		return { id, ...image, caption: image.caption || null, createdAt: now };
 	}
 
@@ -296,7 +303,7 @@ export class PlantDatabase {
 
 		return row as PlantImage | undefined;
 	}
-	
+
 	getPlantImages(plantId: string): PlantImage[] {
 		const stmt = this.db.prepare(`
 			SELECT * FROM plant_images
@@ -307,5 +314,4 @@ export class PlantDatabase {
 		const rows = stmt.all(plantId);
 		return rows as PlantImage[];
 	}
-
 }
