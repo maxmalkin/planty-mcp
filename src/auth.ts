@@ -15,6 +15,26 @@ if (!GOOGLE) {
 
 const client = new OAuth2Client(GOOGLE);
 
+async function verifyGoogleToken(token: string): Promise<{email: string} | null> {
+	try {
+		const ticket = await client.verifyIdToken({
+			idToken: token,
+			audience: GOOGLE,
+		})
+
+		const payload = ticket.getPayload();
+
+		if(!payload || !payload.email || !payload.email_verified) {
+			return null;
+		}
+
+		return { email: payload.email };
+	} catch (error) {
+		console.error("Error verifying Google token:", error);
+		return null;
+	}
+}
+
 export function createMiddleware(db: PlantDatabase) {
 	return async (
 		req: AuthenticatedRequest,
@@ -32,5 +52,9 @@ export function createMiddleware(db: PlantDatabase) {
 		}
 
 		const token = authHeader.substring(7);
+
+		try {
+			const userData = await verifyGoogleToken(token);
+		}
 	};
 }
