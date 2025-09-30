@@ -71,7 +71,7 @@ An MCP server for plant care management. This is a personal project providing to
 
 - TypeScript
 - Node.js
-- PostgreSQL 15
+- PostgreSQL
 - Express
 - MCP SDK
 - Biome
