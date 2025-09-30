@@ -37,8 +37,8 @@ export interface GrowthLog {
 	id: string;
 	plantId: string;
 	logDate: string;
-	measureType: "height" | "width" | "leafCount" | "other";
-	measureUnit: "cm" | "inches" | "count" | "other";
+	measureType: 'height' | 'width' | 'leafCount' | 'other';
+	measureUnit: 'cm' | 'inches' | 'count' | 'other';
 	value: number;
 	notes: string | null;
 	createdAt: string;
