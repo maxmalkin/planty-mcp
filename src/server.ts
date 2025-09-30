@@ -170,9 +170,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 				},
 			},
 			{
-				name: "list_watering_history",
-				description:
-					"List the watering history for a specific plant by its ID.",
+				name: "add_growth_log",
+				description: "Log a growth log for a plant.",
+				inputSchema: {
+					type: "object",
+					properties: {
+						plantId: { type: "string", description: "The ID of the plant." },
+						date: {
+							type: "string",
+							description: "The date of the log (ISO format).",
+						},
+						measureType: {
+							type: "string",
+							description: "Type of measurement",
+							enum: ["height", "width", "leafCount", "other"],
+						},
+						measureUnit: {
+							type: "string",
+							description: "Unit of measurement",
+							enum: ["cm", "inches", "count", "other"],
+						},
+						value: { type: "number", description: "The measurement value." },
+						notes: { type: "string", description: "Optional notes." },
+					},
+					required: ["plantId", "date", "measureType", "measureUnit", "value"],
+				},
+			},
+			{
+				name: "get_growth_logs",
+				description: "Get growth logs for a specific plant.",
 				inputSchema: {
 					type: "object",
 					properties: {
@@ -354,6 +380,23 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 					],
 				};
 			}
+
+			// case "update_plant": {
+			// 	const plantId = args?.plantId as string;
+			// 	if (!plantId) {
+			// 		return {
+			// 			content: [
+			// 				{
+			// 					type: "text",
+			// 					text: `Args are undefined.`,
+			// 				},
+			// 			],
+			// 			isError: true,
+			// 		};
+			// 	}
+			// 	const updatedPlant = await db.updatePlant(plantId, args);
+			// 	return;
+			// }
 
 			default: {
 				return {
