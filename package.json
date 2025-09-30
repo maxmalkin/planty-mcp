@@ -1,21 +1,26 @@
 {
-  "name": "planty-mcp",
-  "module": "index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/bun": "latest",
-    "@types/node": "^24.6.0",
-    "@types/uuid": "^11.0.0",
-    "tsx": "^4.20.6",
-    "typecript": "0.0.1-security"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.18.2",
-    "better-sqlite3": "^12.4.1",
-    "uuid": "^13.0.0"
-  }
+	"name": "planty-mcp",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"start": "node build/server.js",
+		"dev": "tsx src/server.ts",
+		"build": "tsc"
+	},
+	"devDependencies": {
+		"@types/better-sqlite3": "^7.6.13",
+		"@types/bun": "latest",
+		"@types/node": "^24.6.0",
+		"@types/uuid": "^11.0.0",
+		"tsx": "^4.20.6",
+		"typecript": "0.0.1-security"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.18.2",
+		"better-sqlite3": "^12.4.1",
+		"uuid": "^13.0.0"
+	}
 }
