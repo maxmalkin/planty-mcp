@@ -8,6 +8,7 @@
 		"build": "tsc"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "2.2.4",
 		"@types/better-sqlite3": "^7.6.13",
 		"@types/bun": "latest",
 		"@types/node": "^24.6.0",
