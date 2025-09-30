@@ -14,7 +14,7 @@ export interface Plant {
 	acquiredDate: string;
 	wateringFrequency: number;
 	lastWatered: string | null;
-	careNotes: string;
+	notes: string;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -27,5 +27,19 @@ export interface WateringHistory {
 	plantId: string;
 	wateredDate: string;
 	notes: string | null;
+	createdAt: string;
+}
+
+/**
+ * logDate and createdAt are ISO format.
+ */
+export interface GrowthLog {
+	id: string;
+	plantId: string;
+	logDate: string;
+	measureType: "height" | "width" | "leafCount" | "other";
+	measureUnit: "cm" | "inches" | "count" | "other";
+	value: "number";
+	notes: "string | null";
 	createdAt: string;
 }
