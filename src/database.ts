@@ -159,6 +159,28 @@ export class PlantDatabase {
 		id: string,
 		updates: Partial<Omit<Plant, "id" | "createdAt" | "updatedAt">>
 	): Plant | undefined {
-		if (!this.getPlant(id)) return undefined;
+		const exists = this.getPlant(id);
+		if (!exists) return undefined;
+
+		const fields = _.keys(updates);
+		if (fields.length === 0) return exists;
+
+		const setStmt = fields.map((field) => `${field} = ?`).join(", ");
+		const values = fields.map(
+			(field) => updates[field as keyof typeof updates]
+		);
+
+		const now = new Date().toISOString();
+
+		const stmt = this.db.prepare(`
+			UPDATE plants 
+			SET ${setStmt}, 
+			updatedAt = ? 
+			WHERE id = ?
+		`);
+
+		stmt.run(...values, now, id);
+
+		return this.getPlant(id);
 	}
 }
