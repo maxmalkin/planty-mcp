@@ -141,9 +141,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 							{
 								type: "text",
 								text: `Args are undefined.`,
-								isError: true,
 							},
 						],
+						isError: true,
 					};
 				}
 				const plant = await db.addPlant({
@@ -187,9 +187,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 							{
 								type: "text",
 								text: `Args are undefined.`,
-								isError: true,
 							},
 						],
+						isError: true,
 					};
 				}
 
@@ -223,9 +223,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 							{
 								type: "text",
 								text: `Args are undefined.`,
-								isError: true,
 							},
 						],
+						isError: true,
 					};
 				}
 				const date =
@@ -247,19 +247,57 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				};
 			}
 
+			case "get_watering_schedule": {
+				const daysAhead = (args?.daysAhead as number) || 3;
+				const plants = await db.listPlants();
+				const today = new Date();
+
+				const needsWatering = plants.filter((plant) => {
+					if (!plant.lastWatered) return true;
+
+					const lastWatered = new Date(plant.lastWatered);
+					const daysSinceWatered = Math.floor(
+						(today.getTime() - lastWatered.getTime()) / (1000 * 60 * 60 * 24)
+					);
+					const daysUntilNextWatering =
+						plant.wateringFrequency - daysSinceWatered;
+
+					return daysUntilNextWatering <= daysAhead;
+				});
+
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(needsWatering, null, 2),
+						},
+					],
+				};
+			}
+
 			default: {
 				return {
 					content: [
 						{
 							type: "text",
 							text: `Tool ${name} does not exist.`,
-							isError: true,
 						},
 					],
+					isError: true,
 				};
 			}
 		}
 	} catch (error) {
-		throw new Error(`Error executing tool ${name}: ${error}`);
+		return {
+			content: [
+				{
+					type: "text",
+					text: `Error: ${
+						error instanceof Error ? error.message : String(error)
+					}`,
+				},
+			],
+			isError: true,
+		};
 	}
 });
