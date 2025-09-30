@@ -492,7 +492,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 						| "other",
 					measureUnit: args.measureUnit as "cm" | "inches" | "count" | "other",
 					value: args.value as number,
-					notes: args.notes ? (args.notes as string) : null,
+					notes: (args.notes as string) || null,
 				});
 
 				return {
@@ -500,6 +500,61 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 						{
 							type: "text",
 							text: `Growth log added: ${log.measureType} = ${log.value} ${log.measureUnit}`,
+						},
+					],
+				};
+			}
+
+			case "add_plant_image": {
+				if (!args?.plantId || !args?.filename || !args?.takenAt) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `Args are undefined.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const image = await db.addPlantImage({
+					plantId: args.plantId as string,
+					filename: args.filename as string,
+					caption: (args.caption as string) || null,
+					takenAt: args.takenAt as string,
+				});
+
+				return {
+					content: [
+						{
+							type: "text",
+							text: `Image added: ${image.filename}`,
+						},
+					],
+				};
+			}
+
+			case "get_plant_images": {
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: "text",
+								text: `Args are undefined.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const images = await db.getPlantImages(args.plantId as string);
+
+				return {
+					content: [
+						{
+							type: "text",
+							text: JSON.stringify(images, null, 2),
 						},
 					],
 				};
