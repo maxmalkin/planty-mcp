@@ -6,8 +6,10 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { PlantDatabase } from './database';
+import { mcpConfig } from './config';
 
 const db = new PlantDatabase();
+const USER_ID = mcpConfig.userId;
 
 const server = new Server(
 	{
@@ -243,18 +245,18 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 	try {
 		switch (name) {
 			case 'add_plant': {
-				if (args?.plantId === undefined) {
+				if (!args?.name || !args?.species) {
 					return {
 						content: [
 							{
 								type: 'text',
-								text: `Args are undefined.`,
+								text: `Missing required fields: name and species are required.`,
 							},
 						],
 						isError: true,
 					};
 				}
-				const plant = await db.addPlant({
+				const plant = await db.addPlant(USER_ID, {
 					name: args.name as string,
 					species: args.species as string,
 					location: args.location as string,
@@ -276,7 +278,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
 			case 'list_plants': {
 				const filters = args as { location?: string; species?: string };
-				const plants = await db.listPlants(filters);
+				const plants = await db.listPlants(USER_ID, filters);
 
 				return {
 					content: [
@@ -294,14 +296,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 						content: [
 							{
 								type: 'text',
-								text: `Args are undefined.`,
+								text: `Plant ID is required.`,
 							},
 						],
 						isError: true,
 					};
 				}
 
-				const plant = await db.getPlant(args.plantId as string);
+				const plant = await db.getPlant(USER_ID, args.plantId as string);
 
 				if (!plant) {
 					return {
@@ -330,14 +332,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 						content: [
 							{
 								type: 'text',
-								text: `Args are undefined.`,
+								text: `Plant ID is required.`,
 							},
 						],
 						isError: true,
 					};
 				}
 
-				await db.deletePlant(args.plantId as string);
+				await db.deletePlant(USER_ID, args.plantId as string);
 
 				return {
 					content: [
@@ -355,7 +357,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 						content: [
 							{
 								type: 'text',
-								text: `Args are undefined.`,
+								text: `Plant ID is required.`,
 							},
 						],
 						isError: true,
@@ -365,10 +367,23 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 					(args.wateredDate as string) ||
 					new Date().toISOString().split('T')[0];
 				const history = await db.waterPlant(
+					USER_ID,
 					args.plantId as string,
 					date,
 					args.notes as string | undefined,
 				);
+
+				if (!history) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant with ID ${args.plantId} not found.`,
+							},
+						],
+						isError: true,
+					};
+				}
 
 				return {
 					content: [
@@ -382,7 +397,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
 			case 'get_watering_schedule': {
 				const daysAhead = (args?.daysAhead as number) || 3;
-				const plants = await db.listPlants();
+				const plants = await db.listPlants(USER_ID);
 				const today = new Date();
 
 				const needsWatering = plants.filter((plant) => {
@@ -409,6 +424,18 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 			}
 
 			case 'update_plant': {
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant ID is required.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
 				const updates: {
 					name?: string;
 					species?: string;
@@ -428,14 +455,14 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 					updates.wateringFrequency = args.wateringFrequency;
 				if (typeof args?.notes === 'string') updates.notes = args.notes;
 
-				const plant = await db.updatePlant(args?.plantId as string, updates);
+				const plant = await db.updatePlant(USER_ID, args.plantId as string, updates);
 
 				if (!plant) {
 					return {
 						content: [
 							{
 								type: 'text',
-								text: `Plant with ID ${args?.plantId} not found.`,
+								text: `Plant with ID ${args.plantId} not found.`,
 							},
 						],
 					};
@@ -451,13 +478,135 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				};
 			}
 
+			case 'add_growth_log': {
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant ID is required.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const log = await db.addGrowthLog(USER_ID, {
+					plantId: args.plantId as string,
+					logDate: args.date as string,
+					measureType: args.measureType as 'height' | 'width' | 'leafCount' | 'other',
+					measureUnit: args.measureUnit as 'cm' | 'inches' | 'count' | 'other',
+					value: args.value as number,
+					notes: (args.notes as string | undefined) || null,
+				});
+
+				if (!log) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant with ID ${args.plantId} not found.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				return {
+					content: [
+						{
+							type: 'text',
+							text: `Growth log added successfully.`,
+						},
+					],
+				};
+			}
+
 			case 'get_growth_logs': {
-				const logs = await db.getGrowthLogs(args?.plantId as string);
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant ID is required.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const logs = await db.getGrowthLogs(USER_ID, args.plantId as string);
 				return {
 					content: [
 						{
 							type: 'text',
 							text: JSON.stringify(logs, null, 2),
+						},
+					],
+				};
+			}
+
+			case 'add_plant_image': {
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant ID is required.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const image = await db.addPlantImage(USER_ID, {
+					plantId: args.plantId as string,
+					filename: args.filename as string,
+					caption: (args.caption as string | undefined) || null,
+					takenAt: args.takenAt as string,
+				});
+
+				if (!image) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant with ID ${args.plantId} not found.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				return {
+					content: [
+						{
+							type: 'text',
+							text: `Plant image added successfully.`,
+						},
+					],
+				};
+			}
+
+			case 'get_plant_images': {
+				if (!args?.plantId) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Plant ID is required.`,
+							},
+						],
+						isError: true,
+					};
+				}
+
+				const images = await db.getPlantImages(USER_ID, args.plantId as string);
+				return {
+					content: [
+						{
+							type: 'text',
+							text: JSON.stringify(images, null, 2),
 						},
 					],
 				};

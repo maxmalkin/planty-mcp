@@ -15,3 +15,7 @@ export const dbConfig: DatabaseConfig = {
 	password: process.env.DB_PASSWORD || 'password',
 	database: process.env.DB_NAME || 'planty',
 };
+
+export const mcpConfig = {
+	userId: process.env.MCP_USER_ID || '',
+};

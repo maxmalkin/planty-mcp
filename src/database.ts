@@ -10,7 +10,7 @@ const { Pool } = pg;
 
 export interface User {
 	id: string;
-	email: string;
+	email: string | null;
 	createdAt: string;
 }
 
@@ -156,14 +156,14 @@ export class PlantDatabase {
 		return date.toISOString();
 	}
 
-	async createUser(): Promise<string> {
+	async createUser(email: string | null = null): Promise<string> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
 
 		try {
 			await this.pool.query(
-				"INSERT INTO users (id, created_at) VALUES ($1, $2)",
-				[id, now]
+				"INSERT INTO users (id, email, created_at) VALUES ($1, $2, $3)",
+				[id, email, now]
 			);
 			return id;
 		} catch (error) {
@@ -268,7 +268,7 @@ export class PlantDatabase {
 		}
 	): Promise<Plant[]> {
 		let query = "SELECT * FROM plants WHERE user_id = $1";
-		const params: any[] = [userId];
+		const params = [userId];
 		let paramIndex = 2;
 
 		if (filters) {
@@ -530,7 +530,7 @@ export class PlantDatabase {
 
 	generateApiKey(): string {
 		const randomBytes = crypto.randomBytes(24).toString("base64url");
-		return `planty-${randomBytes}`;
+		return `planty_live_${randomBytes}`;
 	}
 
 	private hashApiKey(apiKey: string): string {
@@ -538,38 +538,37 @@ export class PlantDatabase {
 	}
 
 	async createApiKey(userId: string): Promise<string> {
-		const key = this.generateApiKey();
-		const hash = this.hashApiKey(key);
-		const prefix = key.substring(0, 16);
+		const apiKey = this.generateApiKey();
+		const keyHash = this.hashApiKey(apiKey);
+		const keyPrefix = apiKey.substring(0, 16);
 		const id = uuidv4();
 		const now = new Date().toISOString();
 
 		await this.pool.query(
 			`INSERT INTO api_keys (id, user_id, key_hash, key_prefix, created_at)
 			VALUES ($1, $2, $3, $4, $5)`,
-			[id, userId, hash, prefix, now]
+			[id, userId, keyHash, keyPrefix, now]
 		);
 
-		return key;
+		return apiKey;
 	}
 
 	async getUserByApiKey(apiKey: string): Promise<User | undefined> {
-		const hash = this.hashApiKey(apiKey);
+		const keyHash = this.hashApiKey(apiKey);
 
 		const result = await this.pool.query(
-			`SELECT u.id, u.created_at
+			`SELECT u.id, u.email, u.created_at
 			FROM users u
-			JOIN api_keys a ON u.id = a.user_id
-			WHERE a.key_hash = $1 and a.is_active = true
-			`,
-			[hash]
+			JOIN api_keys ak ON u.id = ak.user_id
+			WHERE ak.key_hash = $1 AND ak.is_active = true`,
+			[keyHash]
 		);
 
 		if (result.rows.length === 0) return undefined;
 
 		await this.pool.query(
 			`UPDATE api_keys SET last_used_at = $1 WHERE key_hash = $2`,
-			[new Date().toISOString(), hash]
+			[new Date().toISOString(), keyHash]
 		);
 
 		const row = result.rows[0];
@@ -578,6 +577,19 @@ export class PlantDatabase {
 			email: row.email,
 			createdAt: this.toISOString(row.created_at) as string,
 		};
+	}
+
+	async addEmailToUser(userId: string, email: string): Promise<boolean> {
+		try {
+			await this.pool.query(`UPDATE users SET email = $1 WHERE id = $2`, [
+				email,
+				userId,
+			]);
+			return true;
+		} catch (error) {
+			console.error("Error adding email to user:", error);
+			return false;
+		}
 	}
 
 	async getUserApiKeys(userId: string): Promise<
@@ -590,9 +602,9 @@ export class PlantDatabase {
 	> {
 		const result = await this.pool.query(
 			`SELECT id, key_prefix, created_at, last_used_at
-		FROM api_keys
-		WHERE user_id = $1 AND is_active = true
-		ORDER BY created_at DESC`,
+			FROM api_keys
+			WHERE user_id = $1 AND is_active = true
+			ORDER BY created_at DESC`,
 			[userId]
 		);
 

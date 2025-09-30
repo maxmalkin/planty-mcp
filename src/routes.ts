@@ -1,23 +1,45 @@
 import express from "express";
-import { PlantDatabase } from "./database";
-import { AuthenticatedRequest } from "./auth";
+import { PlantDatabase } from "./database.js";
+import type { AuthenticatedRequest } from "./auth.js";
 
 export function createRoutes(db: PlantDatabase) {
 	const router = express.Router();
+
 	router.post("/generate-key", async (req, res) => {
 		try {
-			const userId = db.createUser();
-			const key = db.generateApiKey(userId);
+			const userId = await db.createUser();
+			const apiKey = await db.createApiKey(userId);
 
 			res.json({
-				apiKey: key,
+				apiKey,
 				userId,
-				message:
-					"Please store this API key securely. You will not be able to see it again.",
+				message: "Save this API key. You won't be able to see it again.",
 			});
 		} catch (error) {
-			console.error("Error generating API key:", error);
-			res.status(500).json({ error: "Internal Server Error" });
+			console.error("Error generating key:", error);
+			res.status(500).json({ error: "Failed to generate API key" });
+		}
+	});
+
+	router.post("/add-email", async (req: AuthenticatedRequest, res) => {
+		const { email } = req.body;
+		const userId = req.userId!;
+
+		if (!email || !email.includes("@")) {
+			return res.status(400).json({ error: "Valid email required" });
+		}
+
+		try {
+			const success = await db.addEmailToUser(userId, email);
+
+			if (!success) {
+				return res.status(400).json({ error: "Email already in use" });
+			}
+
+			res.json({ message: "Email added successfully" });
+		} catch (error) {
+			console.error("Error adding email:", error);
+			res.status(500).json({ error: "Failed to add email" });
 		}
 	});
 
@@ -26,8 +48,9 @@ export function createRoutes(db: PlantDatabase) {
 			if (!req.userId) {
 				return res.status(400).json({ error: "User ID is required" });
 			}
+
 			const user = await db.getUserById(req.userId);
-			const keys = await db.getUserApiKeys(req.userId);
+			const apiKeys = await db.getUserApiKeys(req.userId);
 
 			res.json({
 				user: {
@@ -35,15 +58,15 @@ export function createRoutes(db: PlantDatabase) {
 					email: user?.email,
 					createdAt: user?.createdAt,
 				},
-				keys: keys.map((key) => ({
-					id: key.id,
+				apiKeys: apiKeys.map((key) => ({
+					keyPrefix: key.keyPrefix,
 					createdAt: key.createdAt,
 					lastUsedAt: key.lastUsedAt,
 				})),
 			});
 		} catch (error) {
 			console.error("Error fetching user info:", error);
-			res.status(500).json({ error: "Internal Server Error" });
+			res.status(500).json({ error: "Failed to fetch user info" });
 		}
 	});
 
