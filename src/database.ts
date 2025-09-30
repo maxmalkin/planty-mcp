@@ -1,8 +1,8 @@
-import pg from "pg";
-import { v4 as uuidv4 } from "uuid";
-import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types.js";
-import { dbConfig } from "./config.js";
-import _ from "lodash";
+import pg from 'pg';
+import { v4 as uuidv4 } from 'uuid';
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from './types.js';
+import { dbConfig } from './config.js';
+import _ from 'lodash';
 
 const { Pool } = pg;
 
@@ -24,15 +24,15 @@ export class PlantDatabase {
 	async initialize(): Promise<boolean> {
 		try {
 			const client = await this.pool.connect();
-			console.log("Connected to PostgreSQL database");
+			console.log('Connected to PostgreSQL database');
 
 			await this.initializeDatabase(client);
 			client.release();
 
-			console.log("Database initialized successfully.");
+			console.log('Database initialized successfully.');
 			return true;
 		} catch (error) {
-			console.error("Failed to initialize database:", error);
+			console.error('Failed to initialize database:', error);
 			return false;
 		}
 	}
@@ -113,7 +113,7 @@ export class PlantDatabase {
 		await client.query(createPlantImagesTable);
 
 		const indexStatements = createIndexes
-			.split(";")
+			.split(';')
 			.map((s) => s.trim())
 			.filter((s) => s.length > 0);
 
@@ -124,14 +124,14 @@ export class PlantDatabase {
 
 	private toISOString(date: Date | string | null): string | null {
 		if (!date) return null;
-		if (typeof date === "string") return date;
+		if (typeof date === 'string') return date;
 		return date.toISOString();
 	}
 
 	// DB operations
 
 	async addPlant(
-		plant: Omit<Plant, "id" | "createdAt" | "updatedAt">
+		plant: Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>,
 	): Promise<Plant> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -152,14 +152,14 @@ export class PlantDatabase {
 				plant.notes,
 				now,
 				now,
-			]
+			],
 		);
 
 		return { id, ...plant, createdAt: now, updatedAt: now };
 	}
 
 	async getPlant(id: string): Promise<Plant | undefined> {
-		const result = await this.pool.query("SELECT * FROM plants WHERE id = $1", [
+		const result = await this.pool.query('SELECT * FROM plants WHERE id = $1', [
 			id,
 		]);
 
@@ -184,7 +184,7 @@ export class PlantDatabase {
 		location?: string;
 		species?: string;
 	}): Promise<Plant[]> {
-		let query = "SELECT * FROM plants";
+		let query = 'SELECT * FROM plants';
 		const params: string[] = [];
 		let paramIndex = 1;
 
@@ -202,11 +202,11 @@ export class PlantDatabase {
 			}
 
 			if (conditions.length > 0) {
-				query += " WHERE " + conditions.join(" AND ");
+				query += ' WHERE ' + conditions.join(' AND ');
 			}
 		}
 
-		query += " ORDER BY name";
+		query += ' ORDER BY name';
 
 		const result = await this.pool.query(query, params);
 
@@ -226,7 +226,7 @@ export class PlantDatabase {
 
 	async updatePlant(
 		id: string,
-		updates: Partial<Omit<Plant, "id" | "createdAt" | "updatedAt">>
+		updates: Partial<Omit<Plant, 'id' | 'createdAt' | 'updatedAt'>>,
 	): Promise<Plant | undefined> {
 		const exists = await this.getPlant(id);
 		if (!exists) return undefined;
@@ -235,9 +235,9 @@ export class PlantDatabase {
 		if (fields.length === 0) return exists;
 
 		const dbFieldMap: Record<string, string> = {
-			acquiredDate: "acquired_date",
-			wateringFrequency: "watering_frequency",
-			lastWatered: "last_watered",
+			acquiredDate: 'acquired_date',
+			wateringFrequency: 'watering_frequency',
+			lastWatered: 'last_watered',
 		};
 
 		const setClause = fields
@@ -245,10 +245,10 @@ export class PlantDatabase {
 				const dbField = dbFieldMap[field] || field;
 				return `${dbField} = $${index + 1}`;
 			})
-			.join(", ");
+			.join(', ');
 
 		const values = fields.map(
-			(field) => updates[field as keyof typeof updates]
+			(field) => updates[field as keyof typeof updates],
 		);
 
 		const now = new Date().toISOString();
@@ -258,14 +258,14 @@ export class PlantDatabase {
 			SET ${setClause}, 
 			updated_at = $${fields.length + 1}
 			WHERE id = $${fields.length + 2}`,
-			[...values, now, id]
+			[...values, now, id],
 		);
 
 		return this.getPlant(id);
 	}
 
 	async deletePlant(id: string): Promise<boolean> {
-		const result = await this.pool.query("DELETE FROM plants WHERE id = $1", [
+		const result = await this.pool.query('DELETE FROM plants WHERE id = $1', [
 			id,
 		]);
 
@@ -276,7 +276,7 @@ export class PlantDatabase {
 	async waterPlant(
 		plantId: string,
 		wateredDate: string,
-		notes?: string
+		notes?: string,
 	): Promise<WateringHistory> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -286,7 +286,7 @@ export class PlantDatabase {
 				id, plant_id, watered_date, notes, created_at
 			) 
 			VALUES ($1, $2, $3, $4, $5)`,
-			[id, plantId, wateredDate, notes || null, now]
+			[id, plantId, wateredDate, notes || null, now],
 		);
 
 		// update plant table lastWatered
@@ -295,7 +295,7 @@ export class PlantDatabase {
 			SET last_watered = $1,
 			updated_at = $2
 			WHERE id = $3`,
-			[wateredDate, now, plantId]
+			[wateredDate, now, plantId],
 		);
 
 		return {
@@ -312,7 +312,7 @@ export class PlantDatabase {
 			`SELECT * FROM watering_history
 			WHERE plant_id = $1
 			ORDER BY watered_date DESC`,
-			[plantId]
+			[plantId],
 		);
 
 		return result.rows.map((row) => ({
@@ -325,7 +325,7 @@ export class PlantDatabase {
 	}
 
 	async addGrowthLog(
-		log: Omit<GrowthLog, "id" | "createdAt">
+		log: Omit<GrowthLog, 'id' | 'createdAt'>,
 	): Promise<GrowthLog> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -344,7 +344,7 @@ export class PlantDatabase {
 				log.value,
 				log.notes || null,
 				now,
-			]
+			],
 		);
 
 		return { id, ...log, notes: log.notes || null, createdAt: now };
@@ -355,7 +355,7 @@ export class PlantDatabase {
 			`SELECT * FROM growth_logs
 			WHERE plant_id = $1
 			ORDER BY log_date DESC`,
-			[plantId]
+			[plantId],
 		);
 
 		return result.rows.map((row) => ({
@@ -371,7 +371,7 @@ export class PlantDatabase {
 	}
 
 	async addPlantImage(
-		image: Omit<PlantImage, "id" | "createdAt">
+		image: Omit<PlantImage, 'id' | 'createdAt'>,
 	): Promise<PlantImage> {
 		const id = uuidv4();
 		const now = new Date().toISOString();
@@ -388,7 +388,7 @@ export class PlantDatabase {
 				image.caption || null,
 				image.takenAt,
 				now,
-			]
+			],
 		);
 
 		return { id, ...image, caption: image.caption || null, createdAt: now };
@@ -396,8 +396,8 @@ export class PlantDatabase {
 
 	async getPlantImage(id: string): Promise<PlantImage | undefined> {
 		const result = await this.pool.query(
-			"SELECT * FROM plant_images WHERE id = $1",
-			[id]
+			'SELECT * FROM plant_images WHERE id = $1',
+			[id],
 		);
 
 		if (result.rows.length === 0) return undefined;
@@ -418,7 +418,7 @@ export class PlantDatabase {
 			`SELECT * FROM plant_images
 			WHERE plant_id = $1
 			ORDER BY taken_at DESC`,
-			[plantId]
+			[plantId],
 		);
 
 		return result.rows.map((row) => ({
