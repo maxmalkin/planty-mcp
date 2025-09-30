@@ -14,11 +14,10 @@ export class PlantDatabase {
 		this.db = new Database(dbPath);
 		this.db.pragma("foreign_keys = ON");
 
-		try {
-			this.initializeDatabase();
-			console.log("Database initialized.");
-		} catch (error) {
-			console.error(error);
+		if (!this.initializeDatabase()) {
+			throw new Error("Failed to initialize database.");
+		} else {
+			console.log("Database initialized successfully.");
 		}
 	}
 
