@@ -5,7 +5,9 @@
 	"scripts": {
 		"start": "node build/server.js",
 		"dev": "tsx src/server.ts",
-		"build": "tsc"
+		"build": "tsc",
+		"lint": "biome lint",
+		"lint:fix": "exec biome format --write"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
