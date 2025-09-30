@@ -1,8 +1,8 @@
-import Database from 'better-sqlite3';
-import { v4 as uuidv4 } from 'uuid';
-import type { Plant, WateringHistory, GrowthLog, PlantImage } from './types';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import Database from "better-sqlite3";
+import { v4 as uuidv4 } from "uuid";
+import type { Plant, WateringHistory, GrowthLog, PlantImage } from "./types";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,14 +10,14 @@ const __dirname = path.dirname(__filename);
 export class PlantDatabase {
 	private db: Database.Database;
 
-	constructor(dbPath: string = path.join(__dirname, '../database/plants.db')) {
+	constructor(dbPath: string = path.join(__dirname, "../database/plants.db")) {
 		this.db = new Database(dbPath);
-		this.db.pragma('foreign_keys = ON');
+		this.db.pragma("foreign_keys = ON");
 
 		if (!this.initializeDatabase()) {
-			throw new Error('Failed to initialize database.');
+			throw new Error("Failed to initialize database.");
 		} else {
-			console.log('Database initialized successfully.');
+			console.log("Database initialized successfully.");
 		}
 	}
 
@@ -87,5 +87,33 @@ export class PlantDatabase {
 		} catch (error) {
 			return false;
 		}
+	}
+
+	// DB operations
+
+	addPlant(plant: Omit<Plant, "id" | "createdAt" | "updatedAt">): Plant {
+		const id = uuidv4();
+		const now = new Date().toISOString();
+		const stmt = this.db.prepare(`
+			INSERT INTO plants (
+				id, name, species, location, acquiredDate, wateringFrequency, lastWatered, notes, createdAt, updatedAt
+			) 
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		`);
+
+		stmt.run(
+			id,
+			plant.name,
+			plant.species,
+			plant.location,
+			plant.acquiredDate,
+			plant.wateringFrequency,
+			plant.lastWatered,
+			plant.notes,
+			now,
+			now
+		);
+
+		return { id, ...plant, createdAt: now, updatedAt: now };
 	}
 }
