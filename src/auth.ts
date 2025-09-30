@@ -12,7 +12,13 @@ export function createAuthMiddleware(db: PlantDatabase) {
 		res: Response,
 		next: NextFunction,
 	) => {
-		if (req.path === '/api/generate-key') {
+		if (
+			req.path === '/api/generate-key' ||
+			req.path === '/health' ||
+			req.path === '/' ||
+			req.path.startsWith('/static/') ||
+			req.path.match(/\.(html|css|js|png|jpg|svg|ico)$/)
+		) {
 			return next();
 		}
 
