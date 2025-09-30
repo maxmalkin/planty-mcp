@@ -39,18 +39,29 @@
 				margin: 30px 0;
 				white-space: pre;
 			}
-			.green { color: #4ade80; }
-			.yellow { color: #facc15; }
-			.red { color: #f87171; }
+			.green {
+				color: #4ade80;
+				font-weight: 900;
+			}
+			.yellow {
+				color: #facc15;
+				font-weight: 900;
+			}
+			.red {
+				color: #f87171;
+				font-weight: 900;
+			}
 			.tagline {
 				font-size: 1em;
 				margin: 30px 0 15px 0;
 				color: #a0a0a0;
+				font-weight: 900;
 			}
 			.description {
 				font-size: 0.9em;
 				color: #808080;
 				margin-bottom: 40px;
+				font-weight: 900;
 			}
 			.btn {
 				background: transparent;
@@ -154,23 +165,31 @@
 			<h1>planty-mcp</h1>
 
 			<div class="ascii-plant">
-<span class="green">      \\  |  /</span>
-<span class="green">       \\ | /</span>
-<span class="yellow">        \\|/</span>
-<span class="green">    --- </span><span class="yellow">*</span><span class="green"> ---</span>
-<span class="yellow">        /|\\</span>
-<span class="green">       / | \\</span>
-<span class="green">      /  |  \\</span>
-<span class="green">         |</span>
-<span class="green">         |</span>
-<span class="red">      .-----.</span>
-<span class="red">     /       \\</span>
-<span class="red">    |         |</span>
-<span class="red">     \\_______/</span>
+				<span class="green"> /\</span> <span class="yellow"> ////</span>
+				<span class="green"> \|/</span> <span class="green"> //\\</span>
+				<span class="yellow"> // \\</span> <span class="green"> |</span>
+				<span class="yellow"> || ||</span> <span class="green"> || ||</span>
+				<span class="yellow"> |</span> <span class="yellow"> || ||</span>
+				<span class="green"> || ||</span> <span class="yellow"> / \</span>
+				<span class="green"> || ||</span> <span class="green">//|| ||\\</span>
+				<span class="green"> // \\</span> <span class="green"> || ||</span>
+				<span class="green">// || || \\</span>
+				<span class="green"> // \\</span> <span class="green"> || ||</span>
+				<span class="green">|| || || ||</span>
+				<span class="green"> || ||</span> <span class="red"> ========</span>
+				<span class="red">========== ======</span>
+				<span class="red">=========</span> <span class="red"> | |</span>
+				<span class="red">| | | |</span> <span class="red">| |</span>
+				<span class="red"> | |</span> <span class="red">| | | |</span>
+				<span class="red">| |</span> <span class="red"> |______|</span>
+				<span class="red">|________| |____|</span>
+				<span class="red">|_______|</span>
 			</div>
 
 			<p class="tagline">MCP server for your plants</p>
-			<p class="description">Manage your plants, watering schedules, growth tracking, and care notes</p>
+			<p class="description">
+				Manage your plants, watering schedules, growth tracking, and care notes
+			</p>
 
 			<button class="btn" id="generateBtn" onclick="generateKey()">
 				[ GENERATE API KEY ]
@@ -180,12 +199,16 @@
 				<div class="section-title">&gt; YOUR API KEY</div>
 				<div class="api-key" id="apiKey"></div>
 				<button class="btn" onclick="copyKey()">[ COPY TO CLIPBOARD ]</button>
-				<p class="warning">! Save this key. You won't be able to see it again.</p>
+				<p class="warning">
+					! Save this key. You won't be able to see it again.
+				</p>
 
 				<div class="divider"></div>
 
 				<div class="section-title">&gt; SETUP INSTRUCTIONS</div>
-				<p class="description">Add this MCP server to Claude Desktop or ChatGPT:</p>
+				<p class="description">
+					Add this MCP server to Claude Desktop or ChatGPT:
+				</p>
 
 				<div class="info-box">
 					<strong>ENDPOINT:</strong>
@@ -226,7 +249,8 @@
 					currentApiKey = data.apiKey;
 
 					document.getElementById("apiKey").textContent = currentApiKey;
-					document.getElementById("apiKeyInstructions").textContent = currentApiKey;
+					document.getElementById("apiKeyInstructions").textContent =
+						currentApiKey;
 					document.getElementById("keyDisplay").classList.add("show");
 					btn.style.display = "none";
 				} catch (error) {
