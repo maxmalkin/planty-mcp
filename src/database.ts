@@ -165,7 +165,7 @@ export class PlantDatabase {
 		const fields = _.keys(updates);
 		if (fields.length === 0) return exists;
 
-		const setStmt = fields.map((field) => `${field} = ?`).join(", ");
+		const set = fields.map((field) => `${field} = ?`).join(", ");
 		const values = fields.map(
 			(field) => updates[field as keyof typeof updates]
 		);
@@ -174,7 +174,7 @@ export class PlantDatabase {
 
 		const stmt = this.db.prepare(`
 			UPDATE plants 
-			SET ${setStmt}, 
+			SET ${set}, 
 			updatedAt = ? 
 			WHERE id = ?
 		`);
@@ -190,5 +190,52 @@ export class PlantDatabase {
 
 		// 0 if no row deleted, 1 if row deleted
 		return r.changes > 0;
+	}
+
+	waterPlant(
+		plantId: string,
+		wateredDate: string,
+		notes?: string
+	): WateringHistory {
+		const id = uuidv4();
+		const now = new Date().toISOString();
+
+		const insert = this.db.prepare(`
+			INSERT INTO watering_history (
+				id, plantId, wateredDate, notes, createdAt
+			) 
+			VALUES (?, ?, ?, ?, ?)
+		`);
+
+		insert.run(id, plantId, wateredDate, notes || null, now);
+
+		//update plant table lastWatered
+		const update = this.db.prepare(`
+			UPDATE plants 
+			SET lastWatered = ?,
+			updatedAt = ? 
+			WHERE id = ?
+		`);
+
+		update.run(wateredDate, now, plantId);
+
+		return {
+			id,
+			plantId: plantId,
+			wateredDate: wateredDate,
+			notes: notes || null,
+			createdAt: now,
+		};
+	}
+
+	getWateringHistory(plantId: string): WateringHistory[] {
+		const stmt = this.db.prepare(`
+			SELECT * FROM watering_history
+			WHERE plantId = ?
+			ORDER BY wateredDate DESC
+		`);
+
+		const rows = stmt.all(plantId);
+		return rows as WateringHistory[];
 	}
 }
