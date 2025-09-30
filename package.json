@@ -8,7 +8,9 @@
 		"dev:db": "tsx src/database.ts",
 		"build": "tsc",
 		"lint": "biome lint",
-		"lint:fix": "exec biome format --write"
+		"lint:fix": "exec biome format --write",
+		"start:http": "node build/http-server.js",
+		"dev:http": "tsx src/http-server.ts"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.4",
