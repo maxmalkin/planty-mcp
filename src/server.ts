@@ -5,8 +5,8 @@ import {
 	ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { PlantDatabase } from "./database";
-import { mcpConfig } from "./config";
+import { PlantDatabase } from "./database.js";
+import { mcpConfig } from "./config.js";
 
 const db = new PlantDatabase();
 const USER_ID = mcpConfig.userId;
@@ -399,7 +399,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 				const plants = await db.listPlants(USER_ID);
 				const today = new Date();
 
-				const needsWatering = plants.filter((plant) => {
+				const needsWatering = plants.filter((plant): boolean => {
 					if (!plant.lastWatered) return true;
 
 					const lastWatered = new Date(plant.lastWatered);

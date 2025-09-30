@@ -1,6 +1,6 @@
 import express from 'express';
-import type { PlantDatabase } from './database.ts';
-import type { AuthenticatedRequest } from './auth.ts';
+import type { PlantDatabase } from './database.js';
+import type { AuthenticatedRequest } from './auth.js';
 
 export function createRoutes(db: PlantDatabase): express.Router {
 	const router = express.Router();

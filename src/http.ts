@@ -3,7 +3,7 @@ import express from "express";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import cors from "cors";
 import { PlantDatabase } from "./database.js";
-import { createAuthMiddleware, type AuthenticatedRequest } from "./auth.ts";
+import { createAuthMiddleware, type AuthenticatedRequest } from "./auth.js";
 import { createRoutes } from "./routes.js";
 import { setupToolHandlers } from "./handlers.js";
 import path from "path";
