@@ -274,4 +274,38 @@ export class PlantDatabase {
 		const rows = stmt.all(plantId);
 		return rows as GrowthLog[];
 	}
+
+	addPlantImage(image: Omit<PlantImage, "id" | "createdAt"): PlantImage {
+		const id = uuidv4();
+		const now = new Date().toISOString();
+
+		const stmt = this.db.prepare(`
+			INSER INTO plant_images (
+				id, plantId, filename, caption, takenAt, createdAt
+			)
+			VALUES (?, ?, ?, ?, ?, ?)
+		`)
+
+		stmt.run(id, image.plantId, image.filename, image.caption || null, image.takenAt, now);
+		return { id, ...image, caption: image.caption || null, createdAt: now };
+	}
+
+	getPlantImage(id: string): PlantImage | undefined {
+		const stmt = this.db.prepare(`SELECT * FROM plant_images WHERE id = ?`);
+		const row = stmt.get(id);
+
+		return row as PlantImage | undefined;
+	}
+	
+	getPlantImages(plantId: string): PlantImage[] {
+		const stmt = this.db.prepare(`
+			SELECT * FROM plant_images
+			WHERE plantID = ?
+			ORDER BY takenAt DESC
+		`);
+
+		const rows = stmt.all(plantId);
+		return rows as PlantImage[];
+	}
+
 }
