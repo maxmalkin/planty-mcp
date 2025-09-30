@@ -10,7 +10,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineEnding": "lf"
 	},
 	"linter": {
 		"enabled": true,
@@ -30,7 +31,8 @@
 		"actions": {
 			"source": {
 				"organizeImports": "on"
-			}
+			},
+			"recommended": true
 		}
 	}
 }
