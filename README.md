@@ -70,7 +70,7 @@ An MCP server for plant care management. This is a personal project providing to
 ## Stack
 
 - TypeScript
-- Node.js 18+
+- Node.js
 - PostgreSQL 15
 - Express
 - MCP SDK
