@@ -50,7 +50,7 @@ An MCP server for plant care management. This is a personal project providing to
 │  │  - Users & API Keys (auth)           │  │
 │  │  - Plants, Watering, Growth, Images  │  │
 │  └────────────────┬─────────────────────┘  │
-└────────────────────┼────────────────────────┘
+└────────────────────┼───────────────────────┘
                      │
                      v
             ┌────────────────┐
