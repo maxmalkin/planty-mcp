@@ -238,6 +238,15 @@
 					});
 
 					const data = await response.json();
+
+					if (!response.ok || data.error) {
+						throw new Error(data.error || `Server error: ${response.status}`);
+					}
+
+					if (!data.apiKey) {
+						throw new Error("No API key received from server");
+					}
+
 					currentApiKey = data.apiKey;
 
 					document.getElementById("apiKey").textContent = currentApiKey;
@@ -246,9 +255,9 @@
 					document.getElementById("keyDisplay").classList.add("show");
 					btn.style.display = "none";
 				} catch (error) {
-					alert("Error generating key. Please try again.");
+					alert(`Error: ${error.message || "Failed to generate API key. Please try again."}`);
 					btn.disabled = false;
-					btn.textContent = "Generate API Key";
+					btn.textContent = "[ GENERATE API KEY ]";
 				}
 			}
 

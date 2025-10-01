@@ -57,7 +57,7 @@ export class PlantDatabase {
 			id VARCHAR(36) PRIMARY KEY,
 			user_id VARCHAR(36) NOT NULL,
 			key_hash VARCHAR(255) UNIQUE NOT NULL,
-			key_prefix VARCHAR(10) NOT NULL,
+			key_prefix VARCHAR(50) NOT NULL,
 			created_at TIMESTAMP NOT NULL,
 			last_used TIMESTAMP,
 			is_active BOOLEAN DEFAULT true,
