@@ -17,6 +17,13 @@ export class PlantDatabase {
 	private pool: pg.Pool;
 
 	constructor() {
+		console.log('Database config:', {
+			host: dbConfig.host,
+			port: dbConfig.port,
+			user: dbConfig.user,
+			database: dbConfig.database,
+		});
+
 		this.pool = new Pool({
 			host: dbConfig.host,
 			port: dbConfig.port,
@@ -25,6 +32,7 @@ export class PlantDatabase {
 			database: dbConfig.database,
 			max: 10,
 			idleTimeoutMillis: 30000,
+			connectionTimeoutMillis: 10000,
 		});
 	}
 
