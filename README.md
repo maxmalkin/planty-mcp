@@ -128,13 +128,13 @@ All tools need user authentication
 ## Environment
 
 ```bash
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_USER=username
-DB_PASSWORD=password
-DB_NAME=planty
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
 MCP_USER_ID=         # STDIO
-PORT=3000            # HTTP
+PORT=           # HTTP
 ```
 
 ## Build
