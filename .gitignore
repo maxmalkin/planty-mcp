@@ -206,3 +206,6 @@ build/types.d.ts.map
 build/types.js
 build/types.js.map
 build/public/index.html
+scripts/migrate-all.sh
+migrations/001_increase_key_prefix_length.sql
+migrations/README.md
