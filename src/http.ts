@@ -33,7 +33,7 @@ const db = new PlantDatabase();
 app.use(createAuthMiddleware(db));
 app.use('/api', createRoutes(db));
 
-const mcpServers = new Map<string, Server>();
+const sseTransports = new Map<string, SSEServerTransport>();
 
 app.get('/sse', async (req: AuthenticatedRequest, res) => {
 	if (!req.userId) {
@@ -42,34 +42,67 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 	const userId = req.userId;
 	console.info(`SSE client connected: ${userId}`);
 
-	const server = new Server(
-		{
-			name: 'planty-mcp',
-			version: '1.0.0',
-		},
-		{
-			capabilities: {
-				tools: {},
+	try {
+		const transport = new SSEServerTransport('/message', res);
+		const sessionId = transport.sessionId;
+
+		sseTransports.set(sessionId, transport);
+
+		const server = new Server(
+			{
+				name: 'planty-mcp',
+				version: '1.0.0',
 			},
-		},
-	);
+			{
+				capabilities: {
+					tools: {},
+				},
+			},
+		);
 
-	setupToolHandlers(server, db, userId);
+		setupToolHandlers(server, db, userId);
 
-	const sessionId = `${userId}-${Date.now()}`;
-	mcpServers.set(sessionId, server);
+		transport.onclose = () => {
+			console.info(`SSE transport closed for ${sessionId}, user ${userId}`);
+			sseTransports.delete(sessionId);
+		};
 
-	const transport = new SSEServerTransport('/message', res);
-	await server.connect(transport);
+		await server.connect(transport);
 
-	req.on('close', () => {
-		console.info('SSE client disconnected:', userId);
-		mcpServers.delete(sessionId);
-	});
+		console.info(`SSE session: ${sessionId} for user ${userId}`);
+	} catch (error) {
+		console.error('Error establishing SSE stream:', error);
+		if (!res.headersSent) {
+			res.status(500).send('Error establishing SSE stream');
+		}
+	}
 });
 
 app.post('/message', async (req: AuthenticatedRequest, res) => {
-	res.status(200).end();
+	const sessionId = req.query.sessionId as string;
+
+	if (!sessionId) {
+		console.error('POST /message: Missing sessionId query parameter');
+		return res.status(400).json({ error: 'Missing sessionId parameter' });
+	}
+
+	const transport = sseTransports.get(sessionId);
+
+	if (!transport) {
+		console.error(
+			`POST /message: No active transport found for session ${sessionId}`,
+		);
+		return res.status(404).json({ error: 'Session not found' });
+	}
+
+	try {
+		await transport.handlePostMessage(req, res, req.body);
+	} catch (error) {
+		console.error('Error handling POST message:', error);
+		if (!res.headersSent) {
+			res.status(500).json({ error: 'Error handling request' });
+		}
+	}
 });
 
 async function main() {

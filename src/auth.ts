@@ -10,7 +10,7 @@ export function createAuthMiddleware(db: PlantDatabase) {
 	return async (
 		req: AuthenticatedRequest,
 		res: Response,
-		next: NextFunction
+		next: NextFunction,
 	) => {
 		if (
 			req.path === '/api/generate-key' ||
