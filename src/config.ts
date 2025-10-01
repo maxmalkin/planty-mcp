@@ -9,18 +9,23 @@ export interface DatabaseConfig {
 }
 
 function parseDatabaseConfig(): DatabaseConfig {
-	if (process.env.DATABASE_URL) {
+	const databaseUrl = process.env.DATABASE_URL || process.env.DB_URL;
+
+	if (databaseUrl) {
+		const varName = process.env.DATABASE_URL ? 'DB_URL' : 'DB_URL';
 		try {
-			const url = new URL(process.env.DATABASE_URL);
-			return {
+			const url = new URL(databaseUrl);
+			const config = {
 				host: url.hostname,
 				port: Number.parseInt(url.port || '5432', 10),
 				user: url.username,
 				password: url.password,
 				database: url.pathname.slice(1),
 			};
+			console.log(`Parsed ${varName} successfully`);
+			return config;
 		} catch (error) {
-			console.error('Failed to parse DATABASE_URL:', error);
+			console.error(`Failed to parse ${varName}:`, error);
 		}
 	}
 
