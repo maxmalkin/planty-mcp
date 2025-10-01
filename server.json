@@ -1,0 +1,32 @@
+{
+	"$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+	"name": "io.github.maxmalkin/planty-mcp",
+	"description": "An MCP server that provides plant care recommendations and reminders.",
+	"status": "active",
+	"repository": {
+		"url": "https://github.com/maxmalkin/planty-mcp",
+		"source": "github"
+	},
+	"version": "1.0.0",
+	"packages": [
+		{
+			"registry_type": "npm",
+			"registry_base_url": "https://registry.npmjs.org",
+			"identifier": "planty-mcp",
+			"version": "1.0.0",
+			"transport": {
+				"type": "sse",
+				"url": "https://planty-mcp.onrender.com/sse"
+			},
+			"environment_variables": [
+				{
+					"description": "Your API key for the service",
+					"is_required": true,
+					"format": "string",
+					"is_secret": true,
+					"name": "planty_live_cGR9XEZJCfGKeP10c_DSLBKsLoFh9RD8"
+				}
+			]
+		}
+	]
+}
