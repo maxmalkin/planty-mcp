@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# scripts/migrate-all.sh
+# Runs all migrations in /migrations
+
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,7 +12,7 @@ if [ -f .env ]; then
   export $(cat .env | grep -v '^#' | xargs)
 fi
 
-echo "Running all migrations..."
+echo "Running all migrations."
 
 for migration in "$MIGRATIONS_DIR"/*.sql; do
   if [ -f "$migration" ]; then
@@ -20,4 +23,4 @@ for migration in "$MIGRATIONS_DIR"/*.sql; do
 done
 
 echo ""
-echo "All migrations completed successfully"
+echo "All migrations completed."

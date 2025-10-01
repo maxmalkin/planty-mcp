@@ -8,9 +8,9 @@ An MCP server for plant care management. This is a personal project providing to
 2. Click "Generate API Key"
 3. Save the API key
 4. Configure your MCP client
-   - Endpoint: `https://planty-mcp.onrender.com/sse`
-   - API Key: `planty_live_xxx...`
-   - Use Bearer token
+    - Endpoint: `https://planty-mcp.onrender.com/sse`
+    - API Key: `planty_live_xxx...`
+    - Use Bearer token
 5. Start using `planty-mcp`
 
 ## Architecture
@@ -60,21 +60,21 @@ An MCP server for plant care management. This is a personal project providing to
 
 ## Features
 
-- Plant collection management
-- Watering tracking and scheduling
-- Growth measurement logging
-- Plant image references
-- Multi-user support with API key authentication
-- STDIO for MCP clients, HTTP/SSE for web clients
+-   Plant collection management
+-   Watering tracking and scheduling
+-   Growth measurement logging
+-   Plant image references
+-   Multi-user support with API key authentication
+-   STDIO for MCP clients, HTTP/SSE for web clients
 
 ## Stack
 
-- TypeScript
-- Node.js
-- PostgreSQL
-- Express
-- MCP SDK
-- Biome
+-   TypeScript
+-   Node.js
+-   PostgreSQL
+-   Express
+-   MCP SDK
+-   Biome
 
 ## Get Started
 
@@ -101,29 +101,28 @@ docker-compose up -d
 
 ### HTTP
 
-- `GET /` - Landing (public)
-- `GET /health` - Health check (public)
-- `POST /api/generate-key` - Generate API key (public)
-- `GET /api/me` - Get user info (auth)
-- `POST /api/add-email` - Add email (auth)
-- `GET /sse` - MCP connection through SSE (auth)
+-   `GET /` - Landing (public)
+-   `POST /api/generate-key` - Generate API key (public)
+-   `GET /api/me` - Get user info (auth)
+-   `POST /api/add-email` - Add email (auth)
+-   `GET /sse` - MCP connection through SSE (auth)
 
 ### Tools
 
 All tools need user authentication
 
-- `add_plant` - Add new plant
-- `list_plants` - List all plants
-- `get_plant` - Get plant details
-- `update_plant` - Update plant info
-- `delete_plant` - Remove plant
-- `water_plant` - Record watering event
-- `get_watering_history` - View watering logs
-- `get_watering_schedule` - Get plants needing water
-- `add_growth_log` - Log growth measurements
-- `get_growth_logs` - View growth history
-- `add_plant_image` - Add image reference
-- `get_plant_images` - Get plant images
+-   `add_plant` - Add new plant
+-   `list_plants` - List all plants
+-   `get_plant` - Get plant details
+-   `update_plant` - Update plant info
+-   `delete_plant` - Remove plant
+-   `water_plant` - Record watering event
+-   `get_watering_history` - View watering logs
+-   `get_watering_schedule` - Get plants needing water
+-   `add_growth_log` - Log growth measurements
+-   `get_growth_logs` - View growth history
+-   `add_plant_image` - Add image reference
+-   `get_plant_images` - Get plant images
 
 ## Environment
 

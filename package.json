@@ -1,5 +1,6 @@
 {
 	"name": "planty-mcp",
+	"mcpName": "io.github.maxmalkin/planty-mcp",
 	"module": "index.ts",
 	"type": "module",
 	"scripts": {
@@ -9,6 +10,7 @@
 		"dev:http": "tsx src/http.ts",
 		"dev:db": "tsx src/database.ts",
 		"build": "tsc && cp -r public build/",
+		"check": "biome check",
 		"lint": "biome lint",
 		"lint:fix": "biome format --write"
 	},

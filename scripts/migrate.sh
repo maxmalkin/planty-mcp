@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# scripts/migrate-all.sh <migration-file.sql>
+
 set -e
 
 if [ -f .env ]; then
@@ -19,14 +21,14 @@ fi
 MIGRATION_FILE=$1
 
 if [ ! -f "$MIGRATION_FILE" ]; then
-  echo "Error: Migration file not found: $MIGRATION_FILE"
+  echo "File not found: $MIGRATION_FILE"
   exit 1
 fi
 
-echo "Running migration: $MIGRATION_FILE"
+echo "Running: $MIGRATION_FILE"
 echo "Database: $DB_NAME on $DB_HOST:$DB_PORT"
 
 export PGPASSWORD=$DB_PASSWORD
 psql -h $DB_HOST -p $DB_PORT -U $DB_USER -d $DB_NAME -f $MIGRATION_FILE
 
-echo "Migration completed successfully"
+echo "Migration completed."
