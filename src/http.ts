@@ -83,16 +83,20 @@ app.post('/message', async (req: AuthenticatedRequest, res) => {
 
 	if (!sessionId) {
 		console.error('POST /message: Missing sessionId query parameter');
-		return res.status(400).json({ error: 'Missing sessionId parameter' });
+		return res.status(400).json({
+			error: 'Missing sessionId parameter',
+			message: 'sessionId parameter is required.',
+		});
 	}
 
 	const transport = sseTransports.get(sessionId);
 
 	if (!transport) {
-		console.error(
-			`POST /message: No active transport found for session ${sessionId}`,
-		);
-		return res.status(404).json({ error: 'Session not found' });
+		console.error(`POST /message: No session ${sessionId}`);
+		return res.status(404).json({
+			error: 'Session not found',
+			message: `No session found with ID: ${sessionId}`,
+		});
 	}
 
 	try {
