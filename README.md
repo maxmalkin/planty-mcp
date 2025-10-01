@@ -135,12 +135,3 @@ DB_NAME=
 MCP_USER_ID=         # STDIO
 PORT=           # HTTP
 ```
-
-## Build
-
-```bash
-pnpm build
-
-node build/server.js    # STDIO
-node build/http.js      # HTTP
-```
