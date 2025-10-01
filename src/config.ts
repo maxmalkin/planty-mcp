@@ -9,10 +9,9 @@ export interface DatabaseConfig {
 }
 
 function parseDatabaseConfig(): DatabaseConfig {
-	const databaseUrl = process.env.DATABASE_URL || process.env.DB_URL;
+	const databaseUrl = process.env.DATABASE_URL;
 
 	if (databaseUrl) {
-		const varName = process.env.DATABASE_URL ? 'DB_URL' : 'DB_URL';
 		try {
 			const url = new URL(databaseUrl);
 			const config = {
@@ -22,10 +21,10 @@ function parseDatabaseConfig(): DatabaseConfig {
 				password: url.password,
 				database: url.pathname.slice(1),
 			};
-			console.log(`Parsed ${varName} successfully`);
+			console.log(`Parsed ${databaseUrl} successfully`);
 			return config;
 		} catch (error) {
-			console.error(`Failed to parse ${varName}:`, error);
+			console.error(`Failed to parse ${databaseUrl}:`, error);
 		}
 	}
 
