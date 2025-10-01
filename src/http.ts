@@ -8,6 +8,7 @@ import { createRoutes } from './routes.js';
 import { setupToolHandlers } from './handlers.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,7 +22,6 @@ app.use(express.json());
 const publicPathInBuild = path.join(__dirname, 'public');
 const publicPathRoot = path.join(__dirname, '../public');
 
-import { existsSync } from 'fs';
 const publicPath = existsSync(publicPathInBuild)
 	? publicPathInBuild
 	: publicPathRoot;
