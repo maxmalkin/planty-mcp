@@ -17,7 +17,16 @@ const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+
+const publicPathInBuild = path.join(__dirname, 'public');
+const publicPathRoot = path.join(__dirname, '../public');
+
+import { existsSync } from 'fs';
+const publicPath = existsSync(publicPathInBuild)
+	? publicPathInBuild
+	: publicPathRoot;
+console.log(`Serving static files from: ${publicPath}`);
+app.use(express.static(publicPath));
 
 const db = new PlantDatabase();
 
@@ -47,7 +56,6 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 
 	setupToolHandlers(server, db, userId);
 
-	// Store server instance for this session
 	const sessionId = `${userId}-${Date.now()}`;
 	mcpServers.set(sessionId, server);
 
@@ -61,8 +69,6 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 });
 
 app.post('/message', async (req: AuthenticatedRequest, res) => {
-	// This endpoint receives MCP messages from the client
-	// The SSEServerTransport handles routing to the correct server instance
 	res.status(200).end();
 });
 
