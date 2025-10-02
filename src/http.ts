@@ -33,7 +33,7 @@ const db = new PlantDatabase();
 app.use(createAuthMiddleware(db));
 app.use('/api', createRoutes(db));
 
-const sseTransports = new Map<string, SSEServerTransport>();
+const userTransports = new Map<string, SSEServerTransport>();
 
 app.get('/sse', async (req: AuthenticatedRequest, res) => {
 	if (!req.userId) {
@@ -43,10 +43,17 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 	console.info(`SSE client connected: ${userId}`);
 
 	try {
+		const existingTransport = userTransports.get(userId);
+		if (existingTransport) {
+			console.info(`Closing existing SSE session for user ${userId}`);
+			await existingTransport.close();
+			userTransports.delete(userId);
+		}
+
 		const transport = new SSEServerTransport('/message', res);
 		const sessionId = transport.sessionId;
 
-		sseTransports.set(sessionId, transport);
+		userTransports.set(userId, transport);
 
 		const server = new Server(
 			{
@@ -63,13 +70,15 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 		setupToolHandlers(server, db, userId);
 
 		transport.onclose = () => {
-			console.info(`SSE transport closed for ${sessionId}, user ${userId}`);
-			sseTransports.delete(sessionId);
+			console.info(`SSE transport closed for user ${userId}`);
+			userTransports.delete(userId);
 		};
 
 		await server.connect(transport);
 
-		console.info(`SSE session: ${sessionId} for user ${userId}`);
+		console.info(
+			`SSE session established for user ${userId} (session: ${sessionId})`,
+		);
 	} catch (error) {
 		console.error('Error establishing SSE stream:', error);
 		if (!res.headersSent) {
@@ -79,20 +88,22 @@ app.get('/sse', async (req: AuthenticatedRequest, res) => {
 });
 
 app.post('/message', async (req: AuthenticatedRequest, res) => {
-	const sessionId = req.query.sessionId as string;
-
-	if (!sessionId) {
-		console.error('POST /message: Missing sessionId query parameter');
-		return res.status(400).json({ error: 'Missing sessionId parameter' });
+	if (!req.userId) {
+		return res.status(401).send('Unauthorized');
 	}
 
-	const transport = sseTransports.get(sessionId);
+	const userId = req.userId;
+
+	const transport = userTransports.get(userId);
 
 	if (!transport) {
-		console.error(
-			`POST /message: No active transport found for session ${sessionId}`,
-		);
-		return res.status(404).json({ error: 'Session not found' });
+		console.error(`POST /message: No active SSE session for user ${userId}`);
+		return res.status(400).json({
+			error: 'No active SSE connection',
+			message:
+				'Please establish an SSE connection to /sse before sending messages.',
+			hint: `Connect to GET /sse with your API key, then POST to /message`,
+		});
 	}
 
 	try {
