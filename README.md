@@ -4,14 +4,15 @@ An MCP server for plant care management. This is a personal project providing to
 
 ## Usage
 
-1. Visit https://planty-mcp.onrender.com
-2. Click "Generate API Key"
-3. Save the API key
-4. Configure your MCP client
-   - Endpoint: `https://planty-mcp.onrender.com/sse`
-   - API Key: `planty_live_xxx...`
-   - Use Bearer token
-5. Start using `planty-mcp`
+**Setup:**
+
+1. **Get your API key**: Visit https://planty-mcp.onrender.com and click "Generate API Key"
+2. **Configure your MCP client** with one endpoint:
+   ```
+   URL: https://planty-mcp.onrender.com/sse
+   Authorization: Bearer planty_live_YOUR_KEY_HERE
+   ```
+3. **Start tracking!**
 
 ## Architecture
 
