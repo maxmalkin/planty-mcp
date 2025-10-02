@@ -106,8 +106,7 @@ docker-compose up -d
 - `GET /api/me` - Get user info (auth)
 - `POST /api/add-email` - Add email (auth)
 - `GET /sse` - MCP connection through SSE (auth)
-- `POST /message?sessionId=<id>` - Send MCP messages (auth)
-  - Session ID from SSE endpoint
+- `POST /message` - Send MCP messages (auth)
 
 ### Tools
 
