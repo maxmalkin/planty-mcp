@@ -101,17 +101,17 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 					type: 'object',
 					properties: {
 						plantId: { type: 'string', description: 'The ID of the plant.' },
-						wateredDate: {
+						date: {
 							type: 'string',
-							description: 'The date the plant was watered (ISO format).',
+							description: 'The date the plant was watered (ISO format YYYY-MM-DD, defaults to today).',
 						},
 						notes: {
 							type: 'string',
 							description: 'Any additional notes about watering.',
 						},
 					},
+					required: ['plantId'],
 				},
-				required: ['plantId'],
 			},
 			{
 				name: 'get_watering_schedule',
@@ -363,7 +363,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 					};
 				}
 				const date =
-					(args.wateredDate as string) ||
+					(args.date as string) ||
 					new Date().toISOString().split('T')[0];
 				const history = await db.waterPlant(
 					USER_ID,
