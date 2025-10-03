@@ -24,7 +24,7 @@
 					"is_required": true,
 					"format": "string",
 					"is_secret": true,
-					"name": "planty_live_cGR9XEZJCfGKeP10c_DSLBKsLoFh9RD8"
+					"name": "YOUR_API_KEY"
 				}
 			]
 		}
