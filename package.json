@@ -1,5 +1,5 @@
 {
-	"name": "planty-mcp",
+	"name": "@maxmalkin/planty-mcp",
 	"mcpName": "io.github.maxmalkin/planty-mcp",
 	"module": "index.ts",
 	"type": "module",
