@@ -51,7 +51,7 @@
 	"engines": {
 		"node": ">=18.0.0"
 	},
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "An MCP server for plant care management. ",
 	"main": "index.ts",
 	"repository": {
@@ -63,5 +63,8 @@
 	"bugs": {
 		"url": "https://github.com/maxmalkin/planty-mcp/issues"
 	},
-	"homepage": "https://github.com/maxmalkin/planty-mcp#readme"
+	"homepage": "https://planty-mcp.onrender.com",
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com"
+	}
 }
