@@ -50,5 +50,18 @@
 	},
 	"engines": {
 		"node": ">=18.0.0"
-	}
+	},
+	"version": "1.0.0",
+	"description": "An MCP server for plant care management. ",
+	"main": "index.ts",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/maxmalkin/planty-mcp.git"
+	},
+	"author": "Max Malkin",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/maxmalkin/planty-mcp/issues"
+	},
+	"homepage": "https://github.com/maxmalkin/planty-mcp#readme"
 }
